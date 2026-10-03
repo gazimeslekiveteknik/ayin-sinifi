@@ -227,33 +227,21 @@
         <!-- ---- 6. Ayarlar ---- -->
         <div class="tab-panel" id="tab-settings">
             <div class="admin-card">
-                <h2>⚙️ QR Kod Oluşturucu</h2>
-                <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">
-                    Her sınıf için QR kod bağlantılarını oluşturun. Bu bağlantıları QR kod oluşturucu ile 
-                    (ör: qr-code-generator.com) karekoda çevirip sınıflara asabilirsiniz.
-                </p>
-                <div class="form-group" style="max-width:500px;">
-                    <label>Sitenizin Adresi (Domain)</label>
-                    <input type="text" class="form-input" id="domainInput" 
-                        placeholder="Ör: https://okulunuz.web.app" value="">
+                <h2><i class="fas fa-cog"></i> Genel Sistem Ayarları</h2>
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Okul adını, yönetici şifresini ve sınıfları kodlama yapmadan buradan değiştirebilirsiniz.</p>
+                <div class="form-group">
+                    <label>Okul Adı (Kiosk ve Oylama Ekranı İçin)</label>
+                    <input type="text" id="settingSchoolName" class="form-input">
                 </div>
-                <button class="btn btn-primary" onclick="generateQRLinks()">
-                    📱 QR Bağlantılarını Oluştur
-                </button>
-                <div id="qrLinksContainer" style="margin-top:20px;"></div>
-            </div>
-
-            <div class="admin-card">
-                <h2>🏫 Okul Bilgileri</h2>
-                <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">
-                    Bu ayarlar <code>firebase-config.js</code> dosyasından yönetilir. 
-                    Sınıf listesi, okul adı ve diğer sabitler o dosyada tanımlıdır.
-                </p>
-                <div style="background:var(--bg); padding:16px; border-radius:var(--radius-sm); font-size:0.85rem;">
-                    <strong>Okul Adı:</strong> <span id="settingSchoolName">-</span><br>
-                    <strong>Sınıf Sayısı:</strong> <span id="settingClassCount">-</span><br>
-                    <strong>Büyük Ödül Eşiği:</strong> <span id="settingGrandPrize">-</span> şampiyonluk<br>
+                <div class="form-group">
+                    <label>Yönetici Şifresi (Admin Girişi İçin)</label>
+                    <input type="text" id="settingAdminPassword" class="form-input">
                 </div>
+                <div class="form-group">
+                    <label>Sınıf Listesi (Aralarına virgül koyarak yazın)</label>
+                    <textarea id="settingClasses" class="form-input comment-textarea" placeholder="9-A, 9-B, 10-A, 10-B"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Ayarları Kaydet</button>
             </div>
         </div>
 
