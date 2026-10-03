@@ -516,41 +516,48 @@ async function loadVoteDetails() {
     const monthKey = getCurrentMonthKey();
     const filterClass = document.getElementById('voteFilterClass').value;
     
-    let query = db.collection('votes')
-        .where('monthKey', '==', monthKey)
-        .orderBy('timestamp', 'desc')
-        .limit(100);
-    
+    let query;
     if (filterClass) {
+        // İki where kullanıyoruz ama orderBy yok → composite index gerekmez
         query = db.collection('votes')
             .where('monthKey', '==', monthKey)
             .where('classId', '==', filterClass)
-            .orderBy('timestamp', 'desc')
-            .limit(100);
+            .limit(200);
+    } else {
+        query = db.collection('votes')
+            .where('monthKey', '==', monthKey)
+            .limit(200);
     }
     
     try {
         const snapshot = await query.get();
-        renderVoteDetails(snapshot);
+        // Sıralamayı JS tarafında yaparak composite index ihtiyacını ortadan kaldırıyoruz
+        const docs = [];
+        snapshot.forEach(doc => docs.push(doc));
+        docs.sort((a, b) => {
+            const tA = a.data().timestamp ? a.data().timestamp.toMillis() : 0;
+            const tB = b.data().timestamp ? b.data().timestamp.toMillis() : 0;
+            return tB - tA;
+        });
+        renderVoteDetailsSorted(docs);
     } catch (error) {
         console.error('Oy detayı yükleme hatası:', error);
-        // Bileşik index gerekebilir hatası
         const container = document.getElementById('voteDetailGrid');
         container.innerHTML = `
             <p style="text-align:center; color:var(--text-secondary); padding:20px; grid-column: 1/-1;">
-                ⚠️ Oy detayları yüklenemedi. Firebase Console'dan gerekli bileşik index'leri oluşturmanız gerekebilir.<br>
+                ⚠️ Oy detayları yüklenemedi.<br>
                 <small style="color:var(--text-light);">Hata: ${error.message}</small>
             </p>`;
     }
 }
 
 /**
- * Oy detaylarını render eder
+ * Oy detaylarını render eder (sıralanmış docs dizisinden)
  */
-function renderVoteDetails(snapshot) {
+function renderVoteDetailsSorted(docs) {
     const container = document.getElementById('voteDetailGrid');
     
-    if (snapshot.empty) {
+    if (docs.length === 0) {
         container.innerHTML = `
             <p style="text-align:center; color:var(--text-light); padding:20px; grid-column: 1/-1;">
                 Bu filtre için henüz oy bulunamadı.
@@ -560,7 +567,7 @@ function renderVoteDetails(snapshot) {
     
     container.innerHTML = '';
     
-    snapshot.forEach(doc => {
+    docs.forEach(doc => {
         const data = doc.data();
         const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString('tr-TR') : data.dateKey;
         const time = data.timestamp ? data.timestamp.toDate().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}) : '';
@@ -950,12 +957,17 @@ async function showClassDetails(classId) {
     const monthKey = document.getElementById('monthSelector').value;
     
     try {
+        // Composite index gerektirmemek için tek where kullanıp JS'te filtreliyoruz
         const snapshot = await db.collection('votes')
             .where('monthKey', '==', monthKey)
-            .where('classId', '==', classId)
             .get();
+        
+        const classDocs = [];
+        snapshot.forEach(doc => {
+            if (doc.data().classId === classId) classDocs.push(doc);
+        });
             
-        if(snapshot.empty) {
+        if(classDocs.length === 0) {
             content.innerHTML = '<p>Bu ay hiç oy alınmamış.</p>';
             subtitle.textContent = "";
             return;
@@ -970,7 +982,7 @@ async function showClassDetails(classId) {
             counts[c.id] = 0;
         });
         
-        snapshot.forEach(doc => {
+        classDocs.forEach(doc => {
             const data = doc.data();
             totalVotes++;
             for(const [critId, stars] of Object.entries(data.ratings)) {
