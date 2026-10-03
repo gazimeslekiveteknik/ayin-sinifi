@@ -1559,3 +1559,54 @@ async function deleteAllTeachers() {
     }
     showLoading(false);
 }
+
+// ==========================================
+// OY SİLME İŞLEMİ
+// ==========================================
+window.deleteVote = async function(voteId) {
+    if(!confirm('Bu oyu kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve sınıfın ortalamasını etkiler.')) return;
+    
+    showLoading(true, "Oy siliniyor...");
+    try {
+        // Oyu getir (sınıfını, ayını ve puanını öğrenmek için)
+        const voteDoc = await db.collection('votes').doc(voteId).get();
+        if(voteDoc.exists) {
+            const data = voteDoc.data();
+            
+            // Oyu sil
+            await db.collection('votes').doc(voteId).delete();
+            
+            // Aylık özeti güncelle
+            const summaryRef = db.collection('monthlySummaries').doc(`${data.monthKey}_${data.classId}`);
+            const summaryDoc = await summaryRef.get();
+            
+            if(summaryDoc.exists) {
+                const summaryData = summaryDoc.data();
+                const newVoteCount = Math.max(0, (summaryData.voteCount || 1) - 1);
+                
+                if (newVoteCount === 0) {
+                    // Oy kalmadıysa özeti sil
+                    await summaryRef.delete();
+                } else {
+                    const newTotalScore = Math.max(0, (summaryData.totalScore || 0) - data.totalScore);
+                    const newAvgScore = newTotalScore / (newVoteCount * APP_CONFIG.criteria.length);
+                    
+                    await summaryRef.update({
+                        voteCount: newVoteCount,
+                        totalScore: newTotalScore,
+                        avgScore: parseFloat(newAvgScore.toFixed(2))
+                    });
+                }
+            }
+            
+            showToast("Oy başarıyla silindi.", "success");
+            await refreshData(); // Liderlik tablosunu ve oyları yenile
+        } else {
+            showToast("Oy zaten silinmiş veya bulunamadı.", "warning");
+        }
+    } catch(e) {
+        console.error(e);
+        showToast("Oy silinirken hata oluştu.", "error");
+    }
+    showLoading(false);
+};
