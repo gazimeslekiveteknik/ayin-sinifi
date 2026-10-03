@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4A90D9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Ayın Sınıfı - Oylama</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 
+        ============================================
+        AYIN SINIFI - ÖĞRETMEN OYLAMA SAYFASI
+        ============================================
+        Bu sayfa QR kod ile açılır.
+        URL formatı: oyla.html?sinif=9-A
+        Öğretmen PIN doğrulamasından sonra oylama yapabilir.
+    -->
+</head>
+<body>
+
+    <!-- ========== YÜKLEME EKRANI ========== -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Yükleniyor...</p>
+    </div>
+
+    <!-- ========== ANA KONTEYNER ========== -->
+    <div class="app-container">
+
+        <!-- ===== ÜST BAŞLIK ===== -->
+        <header class="app-header">
+            <div class="school-name" id="schoolName">Mesleki ve Teknik Anadolu Lisesi</div>
+            <h1>⭐ Ayın Sınıfı</h1>
+            <div class="subtitle">Sınıf Değerlendirme Sistemi</div>
+            <div class="class-badge" id="classBadge">--</div>
+        </header>
+
+        <!-- ===== HATA EKRANI (Sınıf parametresi yoksa) ===== -->
+        <div id="errorScreen" class="login-container hidden">
+            <div class="login-card">
+                <div class="login-icon">⚠️</div>
+                <h2>Geçersiz Erişim</h2>
+                <p id="errorMessage">Bu sayfaya doğrudan erişilemez. Lütfen sınıftaki QR kodu okutunuz.</p>
+            </div>
+        </div>
+
+        <!-- ===== GİRİŞ EKRANI (PIN Doğrulama) ===== -->
+        <div id="loginScreen" class="login-container hidden">
+            <div class="login-card">
+                <div class="login-icon">🔐</div>
+                <h2>Öğretmen Doğrulama</h2>
+                <p>Oylama yapabilmek için öğretmen PIN kodunuzu giriniz.</p>
+                
+                <!-- 6 haneli PIN girişi -->
+                <div class="pin-input-group" id="pinInputGroup">
+                    <input type="number" class="pin-input" maxlength="1" data-index="0" inputmode="numeric" autocomplete="off">
+                    <input type="number" class="pin-input" maxlength="1" data-index="1" inputmode="numeric" autocomplete="off">
+                    <input type="number" class="pin-input" maxlength="1" data-index="2" inputmode="numeric" autocomplete="off">
+                    <input type="number" class="pin-input" maxlength="1" data-index="3" inputmode="numeric" autocomplete="off">
+                    <input type="number" class="pin-input" maxlength="1" data-index="4" inputmode="numeric" autocomplete="off">
+                    <input type="number" class="pin-input" maxlength="1" data-index="5" inputmode="numeric" autocomplete="off">
+                </div>
+
+                <button class="btn btn-primary btn-block btn-lg" id="loginBtn" onclick="verifyPIN()">
+                    🔓 Giriş Yap
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== OYLAMA EKRANI ===== -->
+        <div id="votingScreen" class="voting-screen hidden">
+            
+            <!-- Öğretmen Bilgi Barı -->
+            <div class="teacher-info-bar">
+                <span>👤 <span class="teacher-name" id="teacherNameDisplay">--</span></span>
+                <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
+            </div>
+
+            <!-- Kriter Kartları (JS ile doldurulacak) -->
+            <div id="criteriaContainer"></div>
+
+            <!-- Yorum Alanı -->
+            <div class="comment-section">
+                <h3>💬 Öğretmen Notu (İsteğe Bağlı)</h3>
+                <textarea class="comment-textarea" id="teacherComment" 
+                    placeholder="Bu sınıf hakkında eklemek istediğiniz bir not varsa yazabilirsiniz..."
+                    maxlength="500"></textarea>
+            </div>
+
+            <!-- Yapışkan Gönder Butonu -->
+            <div class="submit-bar">
+                <button class="btn btn-success btn-lg btn-block" id="submitBtn" onclick="submitVote()">
+                    ✅ Oylamayı Tamamla
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== BAŞARI EKRANI ===== -->
+        <div id="successScreen" class="success-screen hidden">
+            <div class="success-icon">🎉</div>
+            <h2>Değerlendirme Kaydedildi!</h2>
+            <p>Katkınız için teşekkür ederiz. Oylamanız başarıyla sisteme işlendi.</p>
+            <button class="btn btn-primary" onclick="window.location.reload()">
+                🔄 Yeni Değerlendirme Yap
+            </button>
+        </div>
+
+        <!-- ===== MÜKERRER OY UYARISI ===== -->
+        <div id="duplicateScreen" class="hidden" style="padding: 40px 0;">
+            <div class="duplicate-warning">
+                <div class="warning-icon">🚫</div>
+                <h2>Bugün Zaten Oy Kullandınız</h2>
+                <p>Bu sınıf için bugün zaten bir değerlendirme yapmışsınız. Her öğretmen, her sınıfa günde yalnızca 1 kez oy verebilir.</p>
+                <br>
+                <button class="btn btn-outline" onclick="window.location.reload()">
+                    Tamam
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK (v9 compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Uygulama Yapılandırması -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Oylama Mantığı -->
+    <script src="oyla.js"></script>
+
+</body>
+</html>

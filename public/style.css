@@ -1,0 +1,1409 @@
+/* ============================================= */
+/*  AYIN SINIFI - ANA STİL DOSYASI              */
+/*  Mobile-First Responsive Tasarım              */
+/* ============================================= */
+
+/* ---------- CSS Değişkenleri (Tema) ---------- */
+:root {
+    /* Ana Renkler - Okul ortamına uygun soft palet */
+    --primary: #4A90D9;
+    --primary-dark: #3A7BC8;
+    --primary-light: #E8F0FE;
+    --secondary: #6C5CE7;
+    --accent: #00B894;
+    --accent-dark: #00A381;
+    
+    /* Nötr Renkler */
+    --bg: #F5F7FA;
+    --bg-card: #FFFFFF;
+    --text-primary: #2D3436;
+    --text-secondary: #636E72;
+    --text-light: #B2BEC3;
+    --border: #DFE6E9;
+    --border-light: #EDF2F7;
+    
+    /* Durum Renkleri */
+    --success: #00B894;
+    --warning: #FDCB6E;
+    --danger: #E17055;
+    --info: #74B9FF;
+    
+    /* Yıldız Renkleri */
+    --star-empty: #DFE6E9;
+    --star-filled: #F9CA24;
+    --star-hover: #F0B90B;
+    
+    /* Ödül Renkleri */
+    --gold: #FFD700;
+    --silver: #C0C0C0;
+    --bronze: #CD7F32;
+    
+    /* Gölgeler */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --shadow-xl: 0 12px 40px rgba(0,0,0,0.15);
+    
+    /* Boyutlar */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --max-width: 480px;
+    --max-width-admin: 1200px;
+}
+
+/* ---------- Global Sıfırlama ---------- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Mobil Oylama Sayfası Layout ---------- */
+.app-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- Üst Başlık (Header) ---------- */
+.app-header {
+    text-align: center;
+    padding: 20px 16px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: var(--radius-lg);
+    color: white;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.app-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+}
+
+.app-header .school-name {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.app-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.app-header .subtitle {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.class-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 6px 20px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* ---------- Giriş (Login) Ekranı ---------- */
+.login-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.login-card .login-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.login-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.login-card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.pin-input-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.pin-input {
+    width: 48px;
+    height: 56px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: var(--bg);
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+}
+
+.pin-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+    outline: none;
+    background: white;
+}
+
+.pin-input::-webkit-inner-spin-button,
+.pin-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+/* ---------- Butonlar ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 12px rgba(74, 144, 217, 0.3);
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 16px rgba(74, 144, 217, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+}
+
+.btn-success:hover {
+    box-shadow: 0 6px 16px rgba(0, 184, 148, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger), #D63031);
+    color: white;
+    box-shadow: 0 4px 12px rgba(225, 112, 85, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-lg {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+}
+
+/* ---------- Oylama Ekranı ---------- */
+.voting-screen {
+    flex: 1;
+    padding-bottom: 100px;
+}
+
+.teacher-info-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--primary-light);
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    font-size: 0.85rem;
+}
+
+.teacher-info-bar .teacher-name {
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.teacher-info-bar .logout-btn {
+    color: var(--danger);
+    cursor: pointer;
+    font-weight: 500;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+}
+
+/* ---------- Kriter Kartları ---------- */
+.criteria-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s ease;
+}
+
+.criteria-card.rated {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), var(--shadow-sm);
+}
+
+.criteria-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.criteria-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+}
+
+.criteria-info h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.criteria-info .criteria-desc {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.criteria-info .criteria-goal {
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ---------- Yıldız Değerlendirme ---------- */
+.star-rating {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.star-rating .star {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--star-empty);
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    line-height: 1;
+    padding: 4px;
+}
+
+.star-rating .star:hover,
+.star-rating .star.hover {
+    color: var(--star-hover);
+    transform: scale(1.15);
+}
+
+.star-rating .star.active {
+    color: var(--star-filled);
+}
+
+.star-rating .star.active:hover {
+    color: var(--star-hover);
+}
+
+.rating-label {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    min-height: 20px;
+    font-weight: 500;
+}
+
+/* ---------- Yorum Alanı ---------- */
+.comment-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+}
+
+.comment-section h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.comment-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    resize: vertical;
+    transition: border-color 0.2s;
+    background: var(--bg);
+}
+
+.comment-textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    background: white;
+}
+
+.comment-textarea::placeholder {
+    color: var(--text-light);
+}
+
+/* ---------- Alt Gönder Butonu (Yapışkan) ---------- */
+.submit-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border-light);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+}
+
+.submit-bar .btn {
+    max-width: var(--max-width);
+    width: 100%;
+}
+
+/* ---------- Sonuç / Başarı Ekranı ---------- */
+.success-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 32px 20px;
+}
+
+.success-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.success-screen h2 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    color: var(--accent);
+}
+
+.success-screen p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+/* ---------- Hata Mesajları / Bildirimler ---------- */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    padding: 14px 24px;
+    border-radius: var(--radius-md);
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    z-index: 10000;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-width: 90%;
+    text-align: center;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.success { background: var(--accent); }
+.toast.error { background: var(--danger); }
+.toast.warning { background: var(--warning); color: var(--text-primary); }
+.toast.info { background: var(--info); }
+
+/* ---------- Yükleniyor (Loading) ---------- */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+    margin-top: 12px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* ---------- Gizle/Göster Yardımcıları ---------- */
+.hidden { display: none !important; }
+
+/* ============================================= */
+/*  ADMİN PANELİ STİLLERİ                       */
+/* ============================================= */
+
+.admin-container {
+    max-width: var(--max-width-admin);
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* Admin Üst Bar */
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: var(--radius-lg);
+    color: white;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-header .admin-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Admin Tablar */
+.admin-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-tab {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.admin-tab.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-tab:hover:not(.active) {
+    background: var(--bg);
+}
+
+/* Admin Kartlar */
+.admin-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    margin-bottom: 20px;
+}
+
+.admin-card h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Sıralama Tablosu */
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.leaderboard-table thead {
+    background: var(--bg);
+}
+
+.leaderboard-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+}
+
+.leaderboard-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+}
+
+.leaderboard-table tbody tr {
+    transition: background 0.15s;
+}
+
+.leaderboard-table tbody tr:hover {
+    background: var(--primary-light);
+}
+
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.rank-1 { background: var(--gold); color: #6B4C00; }
+.rank-2 { background: var(--silver); color: #4A4A4A; }
+.rank-3 { background: var(--bronze); color: #3E2200; }
+.rank-other { background: var(--bg); color: var(--text-secondary); }
+
+.class-name-cell {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.star-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--star-filled);
+    font-weight: 600;
+}
+
+/* İlerleme Çubuğu */
+.progress-container {
+    margin-top: 12px;
+}
+
+.progress-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.progress-class-name {
+    min-width: 50px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.progress-bar-track {
+    flex: 1;
+    height: 24px;
+    background: var(--bg);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    min-width: fit-content;
+}
+
+.progress-bar-fill.gold { background: linear-gradient(90deg, var(--gold), #FFE066); color: #6B4C00; }
+.progress-bar-fill.blue { background: linear-gradient(90deg, var(--primary), var(--info)); }
+.progress-bar-fill.green { background: linear-gradient(90deg, var(--accent), #55EFC4); }
+.progress-bar-fill.purple { background: linear-gradient(90deg, var(--secondary), #A29BFE); }
+
+.progress-stars {
+    display: flex;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+/* Öğretmen Yönetimi */
+.teacher-list {
+    display: grid;
+    gap: 8px;
+}
+
+.teacher-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    transition: all 0.15s;
+}
+
+.teacher-item:hover {
+    background: var(--primary-light);
+}
+
+.teacher-item .teacher-detail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.teacher-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.teacher-item .teacher-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Form Elemanları */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: var(--bg);
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: var(--shadow-xl);
+    animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    justify-content: flex-end;
+}
+
+/* ---------- İstatistik Kartları ---------- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-card .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Arşiv Tablosu */
+.archive-list {
+    display: grid;
+    gap: 12px;
+}
+
+.archive-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    transition: all 0.15s;
+}
+
+.archive-item:hover {
+    background: var(--primary-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.archive-month {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.archive-winner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--star-filled);
+    font-weight: 600;
+}
+
+/* ============================================= */
+/*  KİOSK EKRANI STİLLERİ                       */
+/* ============================================= */
+
+.kiosk-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0C1445 0%, #1A237E 30%, #283593 60%, #1A237E 100%);
+    color: white;
+    padding: 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.kiosk-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 50%);
+    animation: kioskGlow 8s ease-in-out infinite;
+}
+
+@keyframes kioskGlow {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(5%, 3%); }
+}
+
+.kiosk-school-name {
+    font-size: 1.2rem;
+    opacity: 0.7;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.kiosk-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 20px rgba(255,215,0,0.3);
+}
+
+.kiosk-month {
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.kiosk-trophy {
+    font-size: 6rem;
+    margin-bottom: 24px;
+    animation: trophyBounce 2s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 30px rgba(255,215,0,0.4));
+}
+
+@keyframes trophyBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+.kiosk-winner-name {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(255,215,0,0.4), 0 4px 20px rgba(0,0,0,0.3);
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 4px;
+}
+
+.kiosk-score {
+    font-size: 1.3rem;
+    opacity: 0.8;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.kiosk-stars {
+    font-size: 2rem;
+    letter-spacing: 8px;
+    position: relative;
+    z-index: 1;
+    animation: starPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes starPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.kiosk-footer {
+    position: absolute;
+    bottom: 30px;
+    font-size: 0.9rem;
+    opacity: 0.4;
+    z-index: 1;
+}
+
+.kiosk-no-data {
+    font-size: 1.5rem;
+    opacity: 0.6;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================= */
+/*  RESPONSİV TASARIM                            */
+/* ============================================= */
+
+/* Tablet */
+@media (min-width: 768px) {
+    .app-container {
+        padding: 24px;
+    }
+    
+    .app-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .criteria-card {
+        padding: 24px;
+    }
+    
+    .star-rating .star {
+        font-size: 2.4rem;
+    }
+    
+    .kiosk-title {
+        font-size: 3.5rem;
+    }
+    
+    .kiosk-winner-name {
+        font-size: 5.5rem;
+    }
+    
+    .kiosk-trophy {
+        font-size: 8rem;
+    }
+}
+
+/* Masaüstü */
+@media (min-width: 1024px) {
+    .admin-tabs {
+        max-width: 600px;
+    }
+    
+    .kiosk-title {
+        font-size: 4rem;
+    }
+    
+    .kiosk-winner-name {
+        font-size: 7rem;
+    }
+    
+    .kiosk-trophy {
+        font-size: 10rem;
+    }
+}
+
+/* Küçük telefonlar için düzenleme */
+@media (max-width: 360px) {
+    .pin-input {
+        width: 42px;
+        height: 48px;
+        font-size: 1.3rem;
+    }
+    
+    .star-rating .star {
+        font-size: 1.7rem;
+        padding: 2px;
+    }
+    
+    .criteria-info h3 {
+        font-size: 0.85rem;
+    }
+}
+
+/* Admin panelinde küçük ekranlar */
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 12px;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .leaderboard-table {
+        font-size: 0.8rem;
+    }
+    
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 10px 8px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-card {
+        padding: 16px;
+    }
+}
+
+/* Admin Login */
+.admin-login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.admin-login-card {
+    max-width: 400px;
+    width: 100%;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.admin-login-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+}
+
+.admin-login-card p {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+}
+
+/* Tab Panel İçerik */
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* Oy geçmişi detay */
+.vote-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.vote-detail-card {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 0.85rem;
+}
+
+.vote-detail-card .vote-teacher {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--primary);
+}
+
+.vote-detail-card .vote-date {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-bottom: 8px;
+}
+
+.vote-detail-card .vote-criteria-list {
+    display: grid;
+    gap: 4px;
+}
+
+.vote-criteria-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vote-criteria-item .criteria-name {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.vote-criteria-item .criteria-stars {
+    color: var(--star-filled);
+    font-size: 0.8rem;
+}
+
+/* Duplicate warning */
+.duplicate-warning {
+    background: linear-gradient(135deg, #FFF3CD, #FFF8E1);
+    border: 1px solid #FFC107;
+    border-radius: var(--radius-md);
+    padding: 24px;
+    text-align: center;
+}
+
+.duplicate-warning .warning-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.duplicate-warning h2 {
+    color: #856404;
+    margin-bottom: 8px;
+}
+
+.duplicate-warning p {
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-light);
+}
+
+/* Kiosk ekranında "Büyük Ödüle Kalan Yol" */
+.kiosk-progress-section {
+    width: 100%;
+    max-width: 700px;
+    margin-top: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.kiosk-progress-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
+.kiosk-progress-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.kiosk-progress-item .kp-class {
+    min-width: 60px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: right;
+}
+
+.kiosk-progress-item .kp-track {
+    flex: 1;
+    height: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.kiosk-progress-item .kp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), #FFE066);
+    border-radius: 10px;
+    transition: width 1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #6B4C00;
+}
+
+.kiosk-progress-item .kp-stars {
+    min-width: 60px;
+    font-size: 0.9rem;
+}

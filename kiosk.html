@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayın Sınıfı - Kiosk Ekranı</title>
+    <link rel="stylesheet" href="style.css">
+    <!--
+        ============================================
+        AYIN SINIFI - KİOSK / DİJİTAL PANO EKRANI
+        ============================================
+        Okul koridorlarındaki ekranlarda gösterilmek
+        üzere tasarlanmış salt-okunur duyuru sayfası.
+        Tam ekran (F11) modunda kullanılması önerilir.
+        Sayfa her 60 saniyede bir otomatik yenilenir.
+    -->
+    <style>
+        /* Kiosk için ekstra stiller - scrollbar gizle */
+        body {
+            overflow: hidden;
+            cursor: none; /* Kiosk modunda imleç gizle */
+        }
+        /* Konfeti animasyonu */
+        .confetti-piece {
+            position: fixed;
+            z-index: 0;
+            opacity: 0.6;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== KİOSK İÇERİĞİ ========== -->
+    <div class="kiosk-container" id="kioskContainer">
+        
+        <!-- Yüklenirken -->
+        <div id="kioskLoading">
+            <div class="spinner" style="border-top-color: var(--gold); width:50px; height:50px;"></div>
+            <p style="margin-top:16px; opacity:0.6;">Yükleniyor...</p>
+        </div>
+
+        <!-- Şampiyon Gösterimi -->
+        <div id="kioskContent" class="hidden">
+            <div class="kiosk-school-name" id="kioskSchoolName">Mesleki ve Teknik Anadolu Lisesi</div>
+            <div class="kiosk-title">🏆 Ayın Sınıfı 🏆</div>
+            <div class="kiosk-month" id="kioskMonth">-</div>
+            
+            <div class="kiosk-trophy">🏅</div>
+            
+            <div class="kiosk-winner-name" id="kioskWinnerName">-</div>
+            
+            <div class="kiosk-score" id="kioskScore">
+                Ortalama Puan: - | Toplam Oy: -
+            </div>
+            
+            <div class="kiosk-stars" id="kioskStars">⭐⭐⭐⭐⭐</div>
+
+            <!-- Büyük Ödüle Kalan Yol -->
+            <div class="kiosk-progress-section" id="kioskProgressSection">
+                <h3>🎯 Büyük Ödüle Kalan Yol</h3>
+                <div id="kioskProgressBars"></div>
+            </div>
+        </div>
+
+        <!-- Veri Yoksa -->
+        <div id="kioskNoData" class="hidden">
+            <div class="kiosk-school-name" id="kioskSchoolName2">Mesleki ve Teknik Anadolu Lisesi</div>
+            <div class="kiosk-title">⭐ Ayın Sınıfı ⭐</div>
+            <div class="kiosk-month" id="kioskMonth2">-</div>
+            <div class="kiosk-no-data">
+                <p style="font-size:3rem; margin-bottom:16px;">📊</p>
+                <p>Henüz bu ay için yeterli değerlendirme yapılmamıştır.</p>
+                <p style="margin-top:8px; font-size:1rem;">Öğretmenlerimiz değerlendirmelerini yaptıkça<br>şampiyon sınıf burada görünecektir.</p>
+            </div>
+        </div>
+
+        <div class="kiosk-footer">
+            Ayın Sınıfı Değerlendirme Sistemi • <span id="kioskTime">-</span>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Uygulama Yapılandırması -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Kiosk Mantığı -->
+    <script src="kiosk.js"></script>
+
+</body>
+</html>

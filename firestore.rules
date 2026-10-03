@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // AYIN SINIFI - Firebase Güvenlik Kuralları
+    // ============================================
+
+    // ------------------------------------
+    // Öğretmenler Koleksiyonu
+    // Sadece okunabilir (doğrulama için).
+    // Yazma işlemleri admin SDK veya console üzerinden yapılır.
+    // ------------------------------------
+    match /teachers/{teacherId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ------------------------------------
+    // Oylar (Votes) Koleksiyonu
+    // - Herkes yeni oy oluşturabilir (PIN doğrulaması frontend'de yapılır)
+    // - Oluşturulacak belge belirli alanlara sahip olmalı
+    // - Mevcut oylar okunamaz, güncellenemez, silinemez
+    // ------------------------------------
+    match /votes/{voteId} {
+      // Oy okuma: sadece sınıf ve ay bazında sorgulanabilir
+      allow read: if true;
+
+      // Yeni oy oluşturma kuralları
+      allow create: if
+        // Gerekli alanlar mevcut olmalı
+        request.resource.data.keys().hasAll([
+          'classId', 'teacherId', 'teacherName', 'monthKey',
+          'dateKey', 'ratings', 'timestamp'
+        ])
+        // classId string olmalı
+        && request.resource.data.classId is string
+        // teacherId string olmalı  
+        && request.resource.data.teacherId is string
+        // monthKey formatı doğru olmalı (YYYY-MM)
+        && request.resource.data.monthKey is string
+        && request.resource.data.monthKey.size() == 7
+        // dateKey formatı doğru olmalı (YYYY-MM-DD)
+        && request.resource.data.dateKey is string
+        && request.resource.data.dateKey.size() == 10
+        // ratings bir map olmalı
+        && request.resource.data.ratings is map
+        // timestamp server timestamp olmalı
+        && request.resource.data.timestamp == request.time;
+
+      // Güncelleme ve silme yasak
+      allow update, delete: if false;
+    }
+
+    // ------------------------------------
+    // Aylık Özet (Monthly Summaries)
+    // - Herkes okuyabilir (leaderboard için)
+    // - Yazma yasak (Cloud Functions veya admin tarafından)
+    // ------------------------------------
+    match /monthlySummaries/{summaryId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ------------------------------------
+    // Arşiv (Archive) - Geçmiş Aylar
+    // - Herkes okuyabilir
+    // - Yazma yasak
+    // ------------------------------------
+    match /archive/{archiveId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ------------------------------------
+    // Yıllık Şampiyonluk Kayıtları
+    // ------------------------------------
+    match /yearlyChampions/{championId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ------------------------------------
+    // Ayarlar (Settings)
+    // ------------------------------------
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // ------------------------------------
+    // Varsayılan: Diğer tüm koleksiyonlar yasak
+    // ------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayın Sınıfı - Yönetici Paneli</title>
+    <link rel="stylesheet" href="style.css">
+    <!--
+        ============================================
+        AYIN SINIFI - YÖNETİCİ (ADMİN) PANELİ
+        ============================================
+        Okul idaresi için tasarlanmış dashboard.
+        Masaüstü görünümüne optimize edilmiştir.
+    -->
+</head>
+<body>
+
+    <!-- ========== ADMİN GİRİŞ EKRANI ========== -->
+    <div id="adminLoginScreen" class="admin-login-container">
+        <div class="admin-login-card">
+            <div class="login-icon" style="font-size:3rem; margin-bottom:16px;">🛡️</div>
+            <h2>Yönetici Girişi</h2>
+            <p>Ayın Sınıfı yönetim paneline erişmek için admin şifresini girin.</p>
+            <div class="form-group">
+                <input type="password" class="form-input" id="adminPasswordInput" 
+                    placeholder="Admin şifresi..." 
+                    onkeydown="if(event.key==='Enter') adminLogin()">
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" onclick="adminLogin()">
+                🔓 Giriş Yap
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== ANA ADMİN PANELİ ========== -->
+    <div id="adminPanel" class="admin-container hidden">
+
+        <!-- ===== Üst Başlık ===== -->
+        <header class="admin-header">
+            <h1>🏫 Ayın Sınıfı - Yönetim Paneli</h1>
+            <div class="admin-actions">
+                <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;" 
+                    onclick="refreshData()">🔄 Yenile</button>
+                <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;" 
+                    onclick="adminLogout()">🚪 Çıkış</button>
+            </div>
+        </header>
+
+        <!-- ===== İstatistik Kartları ===== -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotalVotes">0</div>
+                <div class="stat-label">Bu Ay Toplam Oy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTotalTeachers">0</div>
+                <div class="stat-label">Kayıtlı Öğretmen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTotalClasses">0</div>
+                <div class="stat-label">Toplam Sınıf</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statCurrentMonth">-</div>
+                <div class="stat-label">Aktif Ay</div>
+            </div>
+        </div>
+
+        <!-- ===== Tab Navigasyonu ===== -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="leaderboard" onclick="switchTab('leaderboard')">
+                🏆 Sıralama
+            </button>
+            <button class="admin-tab" data-tab="yearly" onclick="switchTab('yearly')">
+                ⭐ Yıl Sonu
+            </button>
+            <button class="admin-tab" data-tab="votes" onclick="switchTab('votes')">
+                📊 Oy Detayları
+            </button>
+            <button class="admin-tab" data-tab="teachers" onclick="switchTab('teachers')">
+                👨‍🏫 Öğretmenler
+            </button>
+            <button class="admin-tab" data-tab="archive" onclick="switchTab('archive')">
+                📁 Arşiv
+            </button>
+            <button class="admin-tab" data-tab="settings" onclick="switchTab('settings')">
+                ⚙️ Ayarlar
+            </button>
+        </div>
+
+        <!-- ===== TAB PANELLERİ ===== -->
+
+        <!-- ---- 1. Aylık Sıralama (Leaderboard) ---- -->
+        <div class="tab-panel active" id="tab-leaderboard">
+            <div class="admin-card">
+                <h2>🏆 Aylık Liderlik Tablosu - <span id="leaderboardMonth">-</span></h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Sıra</th>
+                            <th>Sınıf</th>
+                            <th>Ort. Puan</th>
+                            <th>Toplam Puan</th>
+                            <th>Oy Sayısı</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-light);">
+                            Veriler yükleniyor...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Aylık Sıfırlama -->
+            <div class="admin-card">
+                <h2>📅 Ay Sonu İşlemleri</h2>
+                <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">
+                    Ay bittiğinde bu butona tıklayarak mevcut ayın verilerini arşivleyin ve yeni ay için sıfırlayın.
+                    Birinci olan sınıfa otomatik olarak "Altın Yıldız" atanır.
+                </p>
+                <button class="btn btn-danger btn-lg" onclick="showResetModal()">
+                    🔄 Ayı Kapat ve Arşivle
+                </button>
+            </div>
+        </div>
+
+        <!-- ---- 2. Yıl Sonu Büyük Ödül ---- -->
+        <div class="tab-panel" id="tab-yearly">
+            <div class="admin-card">
+                <h2>⭐ Yıllık Şampiyonluk Tablosu - Büyük Ödüle Kalan Yol</h2>
+                <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem;">
+                    Her ay birinci olan sınıf 1 Altın Yıldız kazanır. 
+                    <strong id="grandPrizeThreshold">5</strong> yıldıza ilk ulaşan sınıf 
+                    <strong>Büyük Ödül</strong>'ü kazanır! 🎉
+                </p>
+                
+                <!-- İlerleme Çubukları -->
+                <div class="progress-container" id="yearlyProgressContainer">
+                    <p style="text-align:center; color:var(--text-light); padding:20px;">
+                        Henüz şampiyonluk verisi yok.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Aylık Şampiyonlar Listesi -->
+            <div class="admin-card">
+                <h2>🏅 Aylık Şampiyonlar Geçmişi</h2>
+                <div id="monthlyChampionsList" class="archive-list">
+                    <p style="text-align:center; color:var(--text-light); padding:20px;">
+                        Henüz şampiyon verisi yok.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ---- 3. Oy Detayları ---- -->
+        <div class="tab-panel" id="tab-votes">
+            <div class="admin-card">
+                <h2>📊 Bu Ayki Oy Detayları</h2>
+                <div class="form-group" style="max-width:300px;">
+                    <label>Sınıf Filtresi</label>
+                    <select class="form-input" id="voteFilterClass" onchange="loadVoteDetails()">
+                        <option value="">Tüm Sınıflar</option>
+                    </select>
+                </div>
+                <div class="vote-detail-grid" id="voteDetailGrid">
+                    <p style="text-align:center; color:var(--text-light); padding:20px; grid-column: 1/-1;">
+                        Veriler yükleniyor...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ---- 4. Öğretmen Yönetimi ---- -->
+        <div class="tab-panel" id="tab-teachers">
+            <div class="admin-card">
+                <h2>👨‍🏫 Kayıtlı Öğretmenler</h2>
+                <div class="teacher-list" id="teacherList">
+                    <p style="text-align:center; color:var(--text-light); padding:20px;">
+                        Yükleniyor...
+                    </p>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2>➕ Yeni Öğretmen Ekle</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ad Soyad</label>
+                        <input type="text" class="form-input" id="newTeacherName" placeholder="Ör: Ahmet Yılmaz">
+                    </div>
+                    <div class="form-group">
+                        <label>Branş</label>
+                        <input type="text" class="form-input" id="newTeacherBranch" placeholder="Ör: Matematik">
+                    </div>
+                </div>
+                <div class="form-group" style="max-width:300px;">
+                    <label>6 Haneli PIN Kodu</label>
+                    <input type="text" class="form-input" id="newTeacherPin" 
+                        placeholder="Ör: 123456" maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button class="btn btn-success" onclick="addTeacher()">
+                    ✅ Öğretmen Ekle
+                </button>
+            </div>
+        </div>
+
+        <!-- ---- 5. Arşiv ---- -->
+        <div class="tab-panel" id="tab-archive">
+            <div class="admin-card">
+                <h2>📁 Geçmiş Aylar Arşivi</h2>
+                <div class="archive-list" id="archiveList">
+                    <p style="text-align:center; color:var(--text-light); padding:20px;">
+                        Henüz arşivlenmiş ay yok.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ---- 6. Ayarlar ---- -->
+        <div class="tab-panel" id="tab-settings">
+            <div class="admin-card">
+                <h2>⚙️ QR Kod Oluşturucu</h2>
+                <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">
+                    Her sınıf için QR kod bağlantılarını oluşturun. Bu bağlantıları QR kod oluşturucu ile 
+                    (ör: qr-code-generator.com) karekoda çevirip sınıflara asabilirsiniz.
+                </p>
+                <div class="form-group" style="max-width:500px;">
+                    <label>Sitenizin Adresi (Domain)</label>
+                    <input type="text" class="form-input" id="domainInput" 
+                        placeholder="Ör: https://okulunuz.web.app" value="">
+                </div>
+                <button class="btn btn-primary" onclick="generateQRLinks()">
+                    📱 QR Bağlantılarını Oluştur
+                </button>
+                <div id="qrLinksContainer" style="margin-top:20px;"></div>
+            </div>
+
+            <div class="admin-card">
+                <h2>🏫 Okul Bilgileri</h2>
+                <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">
+                    Bu ayarlar <code>firebase-config.js</code> dosyasından yönetilir. 
+                    Sınıf listesi, okul adı ve diğer sabitler o dosyada tanımlıdır.
+                </p>
+                <div style="background:var(--bg); padding:16px; border-radius:var(--radius-sm); font-size:0.85rem;">
+                    <strong>Okul Adı:</strong> <span id="settingSchoolName">-</span><br>
+                    <strong>Sınıf Sayısı:</strong> <span id="settingClassCount">-</span><br>
+                    <strong>Büyük Ödül Eşiği:</strong> <span id="settingGrandPrize">-</span> şampiyonluk<br>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========== AY SONU SIFIRLAMA MODALI ========== -->
+    <div id="resetModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2>⚠️ Ayı Kapat ve Arşivle</h2>
+            <p style="color:var(--text-secondary); margin-bottom:12px;">
+                Bu işlem geri alınamaz. Aşağıdaki adımlar gerçekleştirilecektir:
+            </p>
+            <ul style="color:var(--text-secondary); font-size:0.9rem; margin-left:20px; margin-bottom:16px; line-height:1.8;">
+                <li>Mevcut ayın birincisi <strong>"Altın Yıldız"</strong> kazanacak</li>
+                <li>Tüm aylık veriler arşive taşınacak</li>
+                <li>Yeni ay için puanlar sıfırlanacak</li>
+            </ul>
+            <div style="background:var(--bg); padding:12px; border-radius:var(--radius-sm); margin-bottom:16px;">
+                <strong>Bu ayın birincisi:</strong> <span id="resetWinnerName" style="color:var(--gold); font-weight:700;">-</span>
+            </div>
+            <div class="form-group">
+                <label>Onaylamak için "ARŞIVLE" yazın</label>
+                <input type="text" class="form-input" id="resetConfirmInput" placeholder="ARŞIVLE">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeResetModal()">İptal</button>
+                <button class="btn btn-danger" onclick="executeMonthReset()">🔄 Onayla ve Arşivle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ARŞİV DETAY MODALI ========== -->
+    <div id="archiveDetailModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width:600px;">
+            <h2>📁 <span id="archiveDetailTitle">-</span></h2>
+            <table class="leaderboard-table" style="margin-bottom:16px;">
+                <thead>
+                    <tr>
+                        <th>Sıra</th>
+                        <th>Sınıf</th>
+                        <th>Ort. Puan</th>
+                        <th>Oy Sayısı</th>
+                    </tr>
+                </thead>
+                <tbody id="archiveDetailBody"></tbody>
+            </table>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeArchiveDetail()">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Uygulama Yapılandırması -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Admin Mantığı -->
+    <script src="admin.js"></script>
+
+</body>
+</html>

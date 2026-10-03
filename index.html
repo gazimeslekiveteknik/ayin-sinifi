@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4A90D9">
+    <title>Ayın Sınıfı - Sınıf Değerlendirme Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+    <!--
+        ============================================
+        AYIN SINIFI - ANA SAYFA (LANDING PAGE)
+        ============================================
+        Bu sayfa uygulamanın giriş noktasıdır.
+        Öğretmenler QR kod ile doğrudan oyla.html'e yönlenecektir.
+        Bu sayfa genel bilgi ve yönlendirme sağlar.
+    -->
+    <style>
+        .landing-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .landing-logo {
+            font-size: 5rem;
+            margin-bottom: 16px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .landing-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .landing-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        .landing-cards {
+            display: grid;
+            gap: 16px;
+            width: 100%;
+            margin-bottom: 32px;
+        }
+        .landing-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 24px 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+        }
+        .landing-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+        .landing-card-icon {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+        }
+        .landing-card h3 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .landing-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .landing-info {
+            background: var(--primary-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            width: 100%;
+        }
+        .landing-info strong {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing-container">
+        
+        <div class="landing-logo">⭐</div>
+        
+        <h1 class="landing-title">Ayın Sınıfı</h1>
+        <p class="landing-subtitle">
+            Sınıf Değerlendirme ve Ödül Sistemi<br>
+            <small id="landingSchoolName" style="color:var(--primary);">Mesleki ve Teknik Anadolu Lisesi</small>
+        </p>
+
+        <div class="landing-cards">
+            
+            <a href="oyla.html" class="landing-card">
+                <span class="landing-card-icon">📝</span>
+                <div>
+                    <h3>Sınıf Değerlendirme</h3>
+                    <p>Sınıftaki QR kodu okutarak değerlendirme yapın. (QR kod ile erişim önerilir)</p>
+                </div>
+            </a>
+
+            <a href="admin.html" class="landing-card">
+                <span class="landing-card-icon">🛡️</span>
+                <div>
+                    <h3>Yönetici Paneli</h3>
+                    <p>Liderlik tablosu, öğretmen yönetimi, arşiv ve ay sonu işlemleri.</p>
+                </div>
+            </a>
+
+            <a href="kiosk.html" class="landing-card">
+                <span class="landing-card-icon">🖥️</span>
+                <div>
+                    <h3>Kiosk / Dijital Pano</h3>
+                    <p>Okul koridorlarındaki ekranlarda gösterilecek şampiyon duyuru ekranı.</p>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="landing-info">
+            <strong>📱 Nasıl Çalışır?</strong><br>
+            1. Her sınıfa özel QR kod asılır.<br>
+            2. Derse giren öğretmen QR kodu telefonuyla okutup PIN koduyla giriş yapar.<br>
+            3. 5 kriter üzerinden 1-5 yıldız arası değerlendirme yapar.<br>
+            4. Ay sonunda en yüksek puan alan sınıf <strong>"Ayın Sınıfı"</strong> seçilir! 🏆
+        </div>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script>
+        document.getElementById('landingSchoolName').textContent = APP_CONFIG.schoolName;
+    </script>
+
+</body>
+</html>
