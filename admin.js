@@ -1573,6 +1573,12 @@ window.deleteVote = async function(voteId) {
         if(voteDoc.exists) {
             const data = voteDoc.data();
             
+            // Eski oylarda totalScore olmayabilir, güvenli hesaplayalım
+            let voteTotalScore = data.totalScore;
+            if (voteTotalScore === undefined && data.ratings) {
+                voteTotalScore = Object.values(data.ratings).reduce((a,b) => a+b, 0);
+            }
+            
             // Oyu sil
             await db.collection('votes').doc(voteId).delete();
             
@@ -1588,8 +1594,9 @@ window.deleteVote = async function(voteId) {
                     // Oy kalmadıysa özeti sil
                     await summaryRef.delete();
                 } else {
-                    const newTotalScore = Math.max(0, (summaryData.totalScore || 0) - data.totalScore);
-                    const newAvgScore = newTotalScore / (newVoteCount * APP_CONFIG.criteria.length);
+                    const newTotalScore = Math.max(0, (summaryData.totalScore || 0) - (voteTotalScore || 0));
+                    let newAvgScore = newTotalScore / (newVoteCount * APP_CONFIG.criteria.length);
+                    if(isNaN(newAvgScore)) newAvgScore = 0;
                     
                     await summaryRef.update({
                         voteCount: newVoteCount,
@@ -1606,7 +1613,11 @@ window.deleteVote = async function(voteId) {
         }
     } catch(e) {
         console.error(e);
-        showToast("Oy silinirken hata oluştu.", "error");
+        if(e.code === 'permission-denied') {
+            showToast("Yetki hatası! Lütfen Firebase kurallarını güncelleyin.", "error", 5000);
+        } else {
+            showToast("Oy silinirken hata oluştu.", "error");
+        }
     }
     showLoading(false);
 };
