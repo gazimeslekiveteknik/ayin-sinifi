@@ -57,23 +57,23 @@ function initApp() {
 // ============================================
 
 /**
- * SessionStorage'dan oturum bilgisini kontrol eder
+ * LocalStorage'dan oturum bilgisini kontrol eder
  */
 function checkSession() {
-    const sessionData = sessionStorage.getItem('teacherSession');
+    const sessionData = localStorage.getItem('teacherSession');
     
     if (sessionData) {
         try {
             const session = JSON.parse(sessionData);
             // Oturum bugüne ait mi kontrol et
-            if (session.dateKey === getTodayKey() && session.teacherId && session.teacherName) {
+            if (session.teacherId && session.teacherName) {
                 currentTeacher = session;
                 onTeacherVerified();
                 return;
             }
         } catch (e) {
             // Geçersiz oturum verisi, temizle
-            sessionStorage.removeItem('teacherSession');
+            localStorage.removeItem('teacherSession');
         }
     }
     
@@ -83,7 +83,7 @@ function checkSession() {
 }
 
 /**
- * Oturum bilgisini SessionStorage'a kaydeder
+ * Oturum bilgisini LocalStorage'a kaydeder
  */
 function saveSession(teacherData) {
     const session = {
@@ -92,7 +92,7 @@ function saveSession(teacherData) {
         pin: teacherData.pin,
         dateKey: getTodayKey()
     };
-    sessionStorage.setItem('teacherSession', JSON.stringify(session));
+    localStorage.setItem('teacherSession', JSON.stringify(session));
     currentTeacher = session;
 }
 
@@ -100,7 +100,7 @@ function saveSession(teacherData) {
  * Çıkış yapar - oturum bilgisini temizler
  */
 function logout() {
-    sessionStorage.removeItem('teacherSession');
+    localStorage.removeItem('teacherSession');
     currentTeacher = null;
     ratings = {};
     window.location.reload();
