@@ -1356,6 +1356,7 @@ async function handleMebbisExcel(event) {
         const regex = /([A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s*\((\d{11})\)/g;
         let match;
         const teachersToAdd = [];
+        let skippedCount = 0;
         
         while ((match = regex.exec(fullText)) !== null) {
             let name = match[1].trim();
@@ -1390,7 +1391,10 @@ async function handleMebbisExcel(event) {
             }
             
             // Aynı PIN daha önce eklenmişse veya bu dosya içinde varsa atla (Çift Kayıt Koruması)
-            if (existingPins.has(pin)) continue;
+            if (existingPins.has(pin)) {
+                skippedCount++;
+                continue;
+            }
             existingPins.add(pin);
             
             teachersToAdd.push({
@@ -1433,7 +1437,13 @@ async function handleMebbisExcel(event) {
             await loadTeachers();
             await loadTeacherCount();
         } else {
-            showToast("Dosyada geçerli T.C. Kimlik formatı (Örn: AD SOYAD (12345678901)) bulunamadı.", "warning");
+            if (skippedCount > 0) {
+                showToast(`Dosyadaki tüm öğretmenler (${skippedCount} kişi) zaten listede ekli.`, "info");
+            } else if (file.name.toLowerCase().includes('.xls')) {
+                showToast("Excel(.xls) dosyasında harfler ayrı yazıldığı için okunamadı. Lütfen dosyayı MEBBİS'ten PDF olarak indirip yükleyin.", "error");
+            } else {
+                showToast("Dosyada geçerli öğretmen bilgisi bulunamadı.", "warning");
+            }
         }
         
         event.target.value = '';
