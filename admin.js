@@ -1188,3 +1188,119 @@ async function editTeacher(teacherId, oldName, oldBranch, oldPin) {
     }
     showLoading(false);
 }
+
+
+// ============================================
+// MEBBİS EXCEL İLE TOPLU ÖĞRETMEN EKLEME
+// ============================================
+async function handleMebbisExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showLoading(true, "Excel dosyası tamamen tarayıcınızda (güvenli) işleniyor...");
+    
+    try {
+        const reader = new FileReader();
+        
+        reader.onload = async function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                // XLSX kütüphanesi ile oku (tarayıcı içi)
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheet = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheet];
+                
+                // Verileri 2 boyutlu dizi olarak al
+                const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                
+                let addedCount = 0;
+                let batch = db.batch(); // Toplu ekleme için
+                let operationCount = 0;
+                
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length < 2) continue;
+                    
+                    // Satırdaki TC Kimlik numarasını bul (11 haneli rakam)
+                    let tcIndex = -1;
+                    let tcValue = "";
+                    
+                    for (let j = 0; j < row.length; j++) {
+                        const cellStr = String(row[j] || '').replace(/\s/g, '');
+                        if (cellStr.length === 11 && /^\d{11}$/.test(cellStr)) {
+                            tcIndex = j;
+                            tcValue = cellStr;
+                            break;
+                        }
+                    }
+                    
+                    if (tcIndex !== -1) {
+                        // TC bulundu. MEBBIS listelerinde genelde TC'nin sağı Ad Soyad, onun sağı veya 2 sağı Branştır.
+                        // Basit bir tahmin algoritması:
+                        let name = String(row[tcIndex + 1] || '').trim();
+                        let branch = String(row[tcIndex + 2] || '').trim();
+                        let pin = tcValue.substring(0, 6); // TC İlk 6 hane
+                        
+                        // İsim aşırı kısaysa veya boşsa, belki TC sağında değil solundadır
+                        if (name.length < 3 && tcIndex > 0) {
+                            name = String(row[tcIndex - 1] || '').trim();
+                        }
+                        
+                        if (name && name.length > 2) {
+                            // Yeni döküman oluştur
+                            const docRef = db.collection('teachers').doc();
+                            batch.set(docRef, {
+                                name: name,
+                                branch: branch,
+                                pin: pin,
+                                active: true,
+                                addedVia: 'excel'
+                            });
+                            
+                            addedCount++;
+                            operationCount++;
+                            
+                            // Firestore batch limit is 500. Commit if approaching limit.
+                            if (operationCount >= 450) {
+                                await batch.commit();
+                                batch = db.batch(); // Yeni batch başlat
+                                operationCount = 0;
+                            }
+                        }
+                    }
+                }
+                
+                // Kalanları commit et
+                if (operationCount > 0) {
+                    await batch.commit();
+                }
+                
+                // Güvenlik: Dosya hafızadan silinsin (input temizle)
+                event.target.value = '';
+                
+                showLoading(false);
+                if (addedCount > 0) {
+                    showToast(`Başarılı! ${addedCount} öğretmen güvenle sisteme eklendi.`, "success");
+                    await loadTeachers();
+                    await loadTeacherCount();
+                } else {
+                    showToast("Dosyada geçerli T.C. Kimlik Numarası (11 haneli) bulunamadı. Sütunları kontrol edin.", "warning");
+                }
+                
+            } catch(err) {
+                console.error(err);
+                showLoading(false);
+                event.target.value = '';
+                showToast("Excel dosyası okunurken hata oluştu.", "error");
+            }
+        };
+        
+        reader.readAsArrayBuffer(file);
+        
+    } catch(err) {
+        console.error(err);
+        showLoading(false);
+        event.target.value = '';
+        showToast("İşlem sırasında hata oluştu.", "error");
+    }
+}
