@@ -901,7 +901,7 @@ function generateAllQRCodes() {
         
         // Sınıf Başlığı
         const title = document.createElement('h3');
-        title.textContent = `${sinif} Sınıfı`;
+        title.textContent = sinif;
         labelDiv.appendChild(title);
         
         // QR Kod Alanı
