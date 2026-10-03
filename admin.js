@@ -1359,6 +1359,14 @@ async function handleMebbisExcel(event) {
             
             // "ÖĞRENİM DURUMU" veya "Uzman Öğretmen" gibi başlıklar isme yapışmışsa temizle
             name = name.replace(/ÖĞRENİM DURUMU/gi, '').replace(/Uzman Öğretmen/gi, '').replace(/Başöğretmen/gi, '').trim();
+            
+            // PDF'ten kaynaklı kopuk harf boşluklarını düzelt (Örn: "AL İ HAL İ D AKDA Ğ" -> "ALİ HALİD AKDAĞ")
+            let oldName = '';
+            while (oldName !== name) {
+                oldName = name;
+                name = name.replace(/ ([A-ZÇĞİÖŞÜa-zçğıöşü])(?=\s|$)/g, '$1');
+            }
+            
             if (name.length < 3) continue;
             
             // Branş tespiti için ismin geçtiği yerden sonraki kısımlara bakalım (isteğe bağlı, genel branş atayalım bulamazsak)
