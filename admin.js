@@ -954,7 +954,7 @@ async function showClassDetails(classId) {
     content.innerHTML = '<div class="spinner" style="margin: 0 auto;"></div>';
     modal.classList.remove('hidden');
     
-    const monthKey = document.getElementById('monthSelector').value;
+    const monthKey = getCurrentMonthKey();
     
     try {
         // Composite index gerektirmemek için tek where kullanıp JS'te filtreliyoruz
