@@ -178,40 +178,6 @@
             </div>
         </div>
 
-        <!-- ---- 4. Öğretmen Yönetimi ---- -->
-        <div class="tab-panel" id="tab-teachers">
-            <div class="admin-card">
-                <h2>👨‍🏫 Kayıtlı Öğretmenler</h2>
-                <div class="teacher-list" id="teacherList">
-                    <p style="text-align:center; color:var(--text-light); padding:20px;">
-                        Yükleniyor...
-                    </p>
-                </div>
-            </div>
-
-            <div class="admin-card">
-                <h2>➕ Yeni Öğretmen Ekle</h2>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Ad Soyad</label>
-                        <input type="text" class="form-input" id="newTeacherName" placeholder="Ör: Ahmet Yılmaz">
-                    </div>
-                    <div class="form-group">
-                        <label>Branş</label>
-                        <input type="text" class="form-input" id="newTeacherBranch" placeholder="Ör: Matematik">
-                    </div>
-                </div>
-                <div class="form-group" style="max-width:300px;">
-                    <label>6 Haneli PIN Kodu</label>
-                    <input type="text" class="form-input" id="newTeacherPin" 
-                        placeholder="Ör: 123456" maxlength="6" pattern="[0-9]{6}">
-                </div>
-                <button class="btn btn-success" onclick="addTeacher()">
-                    ✅ Öğretmen Ekle
-                </button>
-            </div>
-        </div>
-
         <!-- ---- 5. Arşiv ---- -->
         <div class="tab-panel" id="tab-archive">
             <div class="admin-card">
