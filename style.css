@@ -1489,3 +1489,101 @@ body {
         display: none !important;
     }
 }
+
+
+/* ========== SETTINGS SIDEBAR LAYOUT ========== */
+.settings-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+.settings-sidebar {
+    width: 240px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    flex-shrink: 0;
+}
+.settings-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+.settings-nav-btn i {
+    width: 20px;
+    text-align: center;
+}
+.settings-nav-btn:hover {
+    background: var(--bg);
+    color: var(--primary);
+}
+.settings-nav-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(74,144,217,0.3);
+}
+.settings-content {
+    flex: 1;
+    min-width: 0;
+}
+.settings-section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+.settings-section.active {
+    display: block;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 800px) {
+    .settings-layout { flex-direction: column; }
+    .settings-sidebar { width: 100%; display: flex; overflow-x: auto; padding: 8px; }
+    .settings-nav-btn { white-space: nowrap; margin-bottom: 0; margin-right: 8px; justify-content: center; }
+}
+
+.class-tag {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--primary);
+    transition: all 0.2s;
+}
+.class-tag:hover {
+    background: var(--primary);
+    color: white;
+}
+.class-tag span {
+    cursor: pointer;
+}
+.class-tag i {
+    cursor: pointer;
+    color: var(--danger);
+    background: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

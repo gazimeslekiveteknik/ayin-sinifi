@@ -1033,16 +1033,25 @@ function populateSettingsUI() {
 function renderSettingClasses() {
     const container = document.getElementById('settingClassesContainer');
     container.innerHTML = editingClasses.map((c, i) => `
-        <span style="background:var(--primary-light); color:var(--primary-dark); padding:6px 12px; border-radius:20px; font-weight:600; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--primary);">
-            ${c}
-            <i class="fas fa-times" style="cursor:pointer; color:var(--danger);" onclick="removeSettingClass(${i})"></i>
-        </span>
+        <div class="class-tag">
+            <span onclick="editSettingClass(${i})" title="İsmi değiştirmek için tıklayın">${c}</span>
+            <i class="fas fa-times" title="Sil" onclick="removeSettingClass(${i})"></i>
+        </div>
     `).join('');
+}
+
+function editSettingClass(index) {
+    const currentName = editingClasses[index];
+    const newName = window.prompt("Sınıfın yeni adını girin:", currentName);
+    if (newName !== null && newName.trim() !== '') {
+        editingClasses[index] = newName.trim(); // Buyuk/Kucuk harf karisik yazabilmeleri icin uppercase'i kaldirdik.
+        renderSettingClasses();
+    }
 }
 
 function addSettingClass() {
     const inp = document.getElementById('newClassInput');
-    const val = inp.value.trim().toUpperCase();
+    const val = inp.value.trim();
     if(val && !editingClasses.includes(val)) {
         editingClasses.push(val);
         inp.value = '';
@@ -1133,4 +1142,14 @@ async function saveSettings() {
         showToast("Hata oluştu.", "error");
     }
     showLoading(false);
+}
+
+
+// Ayarlar içi menü geçişi
+function switchSettingsSection(sectionId, btn) {
+    document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById('set-' + sectionId).classList.add('active');
+    if(btn) btn.classList.add('active');
 }

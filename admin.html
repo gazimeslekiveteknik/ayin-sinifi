@@ -80,9 +80,7 @@
             <button class="admin-tab" data-tab="votes" onclick="switchTab('votes')">
                 📊 Oy Detayları
             </button>
-            <button class="admin-tab" data-tab="teachers" onclick="switchTab('teachers')">
-                👨‍🏫 Öğretmenler
-            </button>
+            
             <button class="admin-tab" data-tab="archive" onclick="switchTab('archive')">
                 📁 Arşiv
             </button>
@@ -241,48 +239,80 @@
             <div id="printArea" class="qr-print-grid"></div>
         </div>
 
-        <div class="tab-panel" id="tab-settings">
-            <div class="admin-card">
-                <h2><i class="fas fa-cog"></i> Genel Sistem Ayarları</h2>
-                <div class="form-group">
-                    <label>Okul Adı (Kiosk ve Oylama Ekranı İçin)</label>
-                    <input type="text" id="settingSchoolName" class="form-input">
+                <div class="tab-panel" id="tab-settings">
+            
+            <div class="settings-layout">
+                <!-- Sol Menü -->
+                <div class="settings-sidebar">
+                    <button class="settings-nav-btn active" onclick="switchSettingsSection('general', this)"><i class="fas fa-cog"></i> Genel Ayarlar</button>
+                    <button class="settings-nav-btn" onclick="switchSettingsSection('classes', this)"><i class="fas fa-users"></i> Sınıf Yönetimi</button>
+                    <button class="settings-nav-btn" onclick="switchSettingsSection('criteria', this)"><i class="fas fa-list-check"></i> Kriter Yönetimi</button>
+                    <button class="settings-nav-btn" onclick="switchSettingsSection('teachers', this)"><i class="fas fa-chalkboard-teacher"></i> Öğretmenler</button>
+                    
+                    <div style="margin-top:20px;">
+                        <button class="btn btn-success btn-block" onclick="saveSettings()" style="padding:12px; font-size:0.9rem;"><i class="fas fa-save"></i> Değişiklikleri Kaydet</button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Yönetici Şifresi (Admin Girişi İçin)</label>
-                    <input type="text" id="settingAdminPassword" class="form-input">
+                
+                <!-- Sağ İçerik -->
+                <div class="settings-content">
+                    
+                    <!-- 1. Genel Ayarlar -->
+                    <div id="set-general" class="settings-section active">
+                        <div class="admin-card">
+                            <h2><i class="fas fa-cog"></i> Genel Sistem Ayarları</h2>
+                            <p style="color:var(--text-secondary); margin-bottom:20px;">Kiosk ve oylama ekranında görünecek okul adını ve yönetici şifresini belirleyin.</p>
+                            <div class="form-group">
+                                <label>Okul Adı</label>
+                                <input type="text" id="settingSchoolName" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Yönetici Şifresi (Admin Paneli İçin)</label>
+                                <input type="text" id="settingAdminPassword" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. Sınıf Yönetimi -->
+                    <div id="set-classes" class="settings-section">
+                        <div class="admin-card">
+                            <h2><i class="fas fa-users"></i> Sınıf Yönetimi</h2>
+                            <p style="color:var(--text-secondary); margin-bottom:12px;">Okulunuzdaki sınıfları ekleyin. <br>💡 <strong>İsim değiştirmek için</strong> mevcut bir sınıfın üstüne tıklayabilirsiniz.</p>
+                            <div id="settingClassesContainer" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; padding:15px; background:var(--bg); border-radius:var(--radius-sm);">
+                                <!-- Sınıf etiketleri -->
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="newClassInput" class="form-input" placeholder="Yeni sınıf adı girin (Örn: 9-A Bilişim)" style="flex:1;">
+                                <button class="btn btn-primary" onclick="addSettingClass()"><i class="fas fa-plus"></i> Ekle</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 3. Kriter Yönetimi -->
+                    <div id="set-criteria" class="settings-section">
+                        <div class="admin-card">
+                            <h2><i class="fas fa-list-check"></i> Kriter Yönetimi</h2>
+                            <p style="color:var(--text-secondary); margin-bottom:12px;">Öğretmenlerin oylama yaparken kullanacağı kriterleri düzenleyin.</p>
+                            <div id="settingCriteriaContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                                <!-- Kriter listesi -->
+                            </div>
+                            <div style="background:var(--bg); padding:20px; border-radius:var(--radius-md); border:2px dashed var(--border);">
+                                <h3 style="margin-bottom:10px;"><i class="fas fa-plus-circle"></i> Yeni Kriter Ekle</h3>
+                                <input type="text" id="newCritTitle" class="form-input" placeholder="Başlık (Örn: Derse Katılım)" style="margin-bottom:10px;">
+                                <input type="text" id="newCritDesc" class="form-input" placeholder="Açıklama (Örn: Öğrencinin derse olan ilgisi)" style="margin-bottom:10px;">
+                                <button class="btn btn-primary" onclick="addSettingCriterion()">Ekle</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 4. Öğretmenler (Taşındı) -->
+                    <div id="set-teachers" class="settings-section">
+                        
+                    </div>
+                    
                 </div>
             </div>
-
-            <div class="admin-card">
-                <h2><i class="fas fa-users"></i> Sınıf Yönetimi</h2>
-                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">Okulunuzdaki sınıfları buradan ekleyip çıkarabilirsiniz.</p>
-                <div id="settingClassesContainer" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
-                    <!-- Sınıf etiketleri -->
-                </div>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="newClassInput" class="form-input" placeholder="Örn: 9-A" style="flex:1;">
-                    <button class="btn btn-success" onclick="addSettingClass()"><i class="fas fa-plus"></i> Ekle</button>
-                </div>
-            </div>
-
-            <div class="admin-card">
-                <h2><i class="fas fa-list-check"></i> Kriter Yönetimi</h2>
-                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">Öğretmenlerin oylama yaparken kullanacağı kriterleri (maksimum 5-6 adet önerilir) buradan düzenleyin.</p>
-                <div id="settingCriteriaContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
-                    <!-- Kriter listesi -->
-                </div>
-                <div style="background:var(--bg); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border);">
-                    <h3 style="font-size:0.95rem; margin-bottom:10px;">Yeni Kriter Ekle</h3>
-                    <input type="text" id="newCritTitle" class="form-input" placeholder="Başlık (Örn: Temizlik)" style="margin-bottom:8px;">
-                    <input type="text" id="newCritDesc" class="form-input" placeholder="Açıklama (Örn: Sıraların düzgün olması)" style="margin-bottom:8px;">
-                    <button class="btn btn-success btn-block" onclick="addSettingCriterion()"><i class="fas fa-plus"></i> Kriter Ekle</button>
-                </div>
-            </div>
-
-            <div style="position: sticky; bottom: 20px; z-index: 10;">
-                <button class="btn btn-primary btn-block btn-lg" onclick="saveSettings()" style="box-shadow: 0 10px 20px rgba(0,0,0,0.2);"><i class="fas fa-save"></i> TÜM AYARLARI KAYDET</button>
-            </div>
+            
         </div>
     </div>
 
