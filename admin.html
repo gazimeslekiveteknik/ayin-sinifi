@@ -225,7 +225,21 @@
         </div>
 
         <!-- ---- 6. Ayarlar ---- -->
-                <div class="tab-panel" id="tab-settings">
+                
+        <!-- ---- Karekodlar ---- -->
+        <div class="tab-panel" id="tab-qr">
+            <div class="admin-card no-print">
+                <h2><i class="fas fa-qrcode"></i> Toplu Karekod Üretici</h2>
+                <p style="color:var(--text-secondary); margin-bottom:16px;">Sınıf defterlerine veya kapılara yapıştırmak için etiket formatında (4x5) karekodlar oluşturun.</p>
+                <div class="form-group" style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="generateAllQRCodes()"><i class="fas fa-cogs"></i> Karekodları Oluştur</button>
+                    <button class="btn btn-success hidden" id="printQrBtn" onclick="window.print()"><i class="fas fa-print"></i> Etiketleri Yazdır</button>
+                </div>
+            </div>
+            <div id="printArea" class="qr-print-grid"></div>
+        </div>
+
+        <div class="tab-panel" id="tab-settings">
             <div class="admin-card">
                 <h2><i class="fas fa-cog"></i> Genel Sistem Ayarları</h2>
                 <div class="form-group">
