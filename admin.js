@@ -1397,6 +1397,9 @@ async function handleMebbisExcel(event) {
             name = name.replace(/UzmanÖğ\s*retmen/gi, '');
             
             name = name.trim();
+            // Tablo başlığından taşan "Öğ" (ATAMA ALANI/Öğ) kalıntısını sil
+            name = name.replace(/^Ö[Ğğ]\s+/i, '');
+            name = name.trim();
             
             if (name.length < 3) continue;
             
