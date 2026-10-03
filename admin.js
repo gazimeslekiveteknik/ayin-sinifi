@@ -64,13 +64,10 @@ function showAdminPanel() {
     document.getElementById('adminLoginScreen').classList.add('hidden');
     document.getElementById('adminPanel').classList.remove('hidden');
     
-    // Ayarları göster
-    document.getElementById('settingSchoolName').textContent = APP_CONFIG.schoolName;
-    document.getElementById('settingClassCount').textContent = APP_CONFIG.classes.length;
-    document.getElementById('settingGrandPrize').textContent = APP_CONFIG.grandPrizeThreshold;
-    document.getElementById('grandPrizeThreshold').textContent = APP_CONFIG.grandPrizeThreshold;
-    document.getElementById('statTotalClasses').textContent = APP_CONFIG.classes.length;
-    document.getElementById('statCurrentMonth').textContent = formatMonthKey(getCurrentMonthKey());
+    // İstatistik barını güncelle
+    if(document.getElementById('statTotalClasses')) document.getElementById('statTotalClasses').textContent = APP_CONFIG.classes.length;
+    if(document.getElementById('statCurrentMonth')) document.getElementById('statCurrentMonth').textContent = formatMonthKey(getCurrentMonthKey());
+    if(document.getElementById('grandPrizeThreshold')) document.getElementById('grandPrizeThreshold').textContent = APP_CONFIG.grandPrizeThreshold;
     
     // Sınıf filtre dropdown'ını doldur
     populateClassFilter();
