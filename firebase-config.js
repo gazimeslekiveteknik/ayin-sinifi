@@ -178,3 +178,26 @@ function showLoading(show, message = 'Yükleniyor...') {
         if (overlay) overlay.remove();
     }
 }
+
+// Ayarları Veritabanından Yükleme
+async function loadRemoteSettings() {
+    try {
+        const docRef = db.collection('settings').doc('general');
+        const docSnap = await docRef.get();
+        if (docSnap.exists) {
+            const data = docSnap.data();
+            if(data.schoolName) APP_CONFIG.schoolName = data.schoolName;
+            if(data.classes) APP_CONFIG.classes = data.classes;
+            if(data.adminPassword) APP_CONFIG.adminPassword = data.adminPassword;
+        } else {
+            // İlk kurulumsa varsayılanları veritabanına yaz
+            await docRef.set({
+                schoolName: APP_CONFIG.schoolName,
+                classes: APP_CONFIG.classes,
+                adminPassword: APP_CONFIG.adminPassword
+            });
+        }
+    } catch (e) {
+        console.error("Ayarlar yüklenemedi:", e);
+    }
+}

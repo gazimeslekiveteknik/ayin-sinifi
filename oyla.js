@@ -11,7 +11,9 @@ let ratings = {};              // Kriter puanlamaları {criteriaId: puan}
 // ============================================
 // SAYFA BAŞLANGIÇ
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRemoteSettings();
+    const sNameObj = document.querySelector('.school-name'); if(sNameObj) sNameObj.textContent = APP_CONFIG.schoolName;
     initApp();
 });
 

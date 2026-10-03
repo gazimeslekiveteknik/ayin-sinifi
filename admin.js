@@ -11,7 +11,9 @@ let yearlyData = {};
 // ============================================
 // SAYFA BAŞLANGIÇ
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRemoteSettings();
+    populateSettingsUI();
     // Admin oturum kontrolü
     const adminSession = sessionStorage.getItem('adminSession');
     if (adminSession === 'active') {
@@ -26,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * Admin şifresiyle giriş yapar
  */
-function adminLogin() {
+async function adminLogin() {
+    await loadRemoteSettings();
     const password = document.getElementById('adminPasswordInput').value.trim();
     
     if (!password) {
@@ -912,4 +915,49 @@ function generateAllQRCodes() {
     // Yazdır butonunu göster
     printBtn.classList.remove('hidden');
     showToast("Karekodlar oluşturuldu! Yazdır butonuna basabilirsiniz.", "success");
+}
+
+
+// ==========================================
+// AYARLAR (SETTINGS) YÖNETİMİ
+// ==========================================
+function populateSettingsUI() {
+    if(document.getElementById('settingSchoolName')) {
+        document.getElementById('settingSchoolName').value = APP_CONFIG.schoolName;
+        document.getElementById('settingAdminPassword').value = APP_CONFIG.adminPassword;
+        document.getElementById('settingClasses').value = APP_CONFIG.classes.join(', ');
+    }
+}
+
+async function saveSettings() {
+    const newSchoolName = document.getElementById('settingSchoolName').value.trim();
+    const newPassword = document.getElementById('settingAdminPassword').value.trim();
+    const newClassesStr = document.getElementById('settingClasses').value;
+    
+    const newClasses = newClassesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    
+    if(!newSchoolName || !newPassword || newClasses.length === 0) {
+        showToast("Lütfen tüm alanları doldurun.", "error");
+        return;
+    }
+    
+    showLoading(true, "Ayarlar kaydediliyor...");
+    try {
+        await db.collection('settings').doc('general').set({
+            schoolName: newSchoolName,
+            adminPassword: newPassword,
+            classes: newClasses
+        }, {merge: true});
+        
+        APP_CONFIG.schoolName = newSchoolName;
+        APP_CONFIG.adminPassword = newPassword;
+        APP_CONFIG.classes = newClasses;
+        
+        showToast("Ayarlar başarıyla kaydedildi! Sayfa yenileniyor...", "success");
+        setTimeout(() => window.location.reload(), 1500);
+    } catch(e) {
+        console.error(e);
+        showToast("Hata oluştu.", "error");
+    }
+    showLoading(false);
 }

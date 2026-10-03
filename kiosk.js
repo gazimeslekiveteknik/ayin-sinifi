@@ -9,7 +9,9 @@ const REFRESH_INTERVAL = 60000; // 60 saniye
 // ============================================
 // SAYFA BAŞLANGIÇ
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRemoteSettings();
+    const kNameObj = document.querySelector('.kiosk-school-name'); if(kNameObj) kNameObj.textContent = APP_CONFIG.schoolName;
     initKiosk();
     startClock();
     
