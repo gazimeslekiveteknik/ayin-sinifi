@@ -920,8 +920,8 @@ function generateAllQRCodes() {
         // QR Kodu Çizdir
         new QRCode(qrDiv, {
             text: qrUrl,
-            width: 160,
-            height: 160,
+            width: 180,
+            height: 180,
             colorDark : "#000000",
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
