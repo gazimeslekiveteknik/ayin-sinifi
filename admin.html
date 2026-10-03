@@ -306,8 +306,33 @@
                     </div>
                     
                     <!-- 4. Öğretmenler (Taşındı) -->
-                    <div id="set-teachers" class="settings-section">
-                        
+                                        <div id="set-teachers" class="settings-section">
+                        <div class="admin-card">
+                            <h2><i class="fas fa-chalkboard-teacher"></i> Öğretmen Yönetimi</h2>
+                            <p style="color:var(--text-secondary); margin-bottom:12px;">Okuldaki öğretmenleri ekleyin, düzenleyin ve onlara uygulamaya giriş yapmaları için bir şifre (PIN) atayın.</p>
+                            
+                            <!-- Ekleme Formu -->
+                            <div style="background:var(--bg); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border); margin-bottom:20px;">
+                                <h3 style="font-size:0.95rem; margin-bottom:10px;"><i class="fas fa-user-plus"></i> Yeni Öğretmen Ekle</h3>
+                                <div class="form-row" style="margin-bottom:10px;">
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <input type="text" id="newTeacherName" class="form-input" placeholder="Ad Soyad">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <input type="text" id="newTeacherBranch" class="form-input" placeholder="Branşı">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <input type="text" id="newTeacherPin" class="form-input" placeholder="Giriş Şifresi (PIN)">
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="addTeacher()"><i class="fas fa-plus"></i> Sisteme Ekle</button>
+                            </div>
+
+                            <!-- Öğretmen Listesi -->
+                            <div id="teacherList" class="teacher-list">
+                                <!-- JS loadTeachers() buraya yükler -->
+                            </div>
+                        </div>
                     </div>
                     
                 </div>
