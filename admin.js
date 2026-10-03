@@ -1304,3 +1304,128 @@ async function handleMebbisExcel(event) {
         showToast("İşlem sırasında hata oluştu.", "error");
     }
 }
+
+// ============================================
+// MEBBİS TOPLU ÖĞRETMEN EKLEME (EXCEL & PDF)
+// ============================================
+async function handleMebbisExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    showLoading(true, "Dosya güvenli bir şekilde tarayıcınızda işleniyor...");
+    
+    try {
+        let fullText = "";
+        
+        if (file.name.toLowerCase().endsWith('.pdf')) {
+            // PDF.js ile oku
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+            
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(s => s.str).join(' ') + ' ';
+            }
+        } else {
+            // XLSX ile Excel oku
+            const arrayBuffer = await file.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const firstSheet = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheet];
+            
+            const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+            for (const row of rows) {
+                fullText += row.join(' ') + ' ';
+            }
+        }
+        
+        // Temizlik: Bazen MEBBIS dosyalarında boşluklar veya gereksiz karakterler olur
+        fullText = fullText.replace(/\s+/g, ' ');
+        
+        // Düzenli ifade (Regex) ile isim ve 11 haneli T.C.'yi yakala
+        // Format: AD SOYAD (12345678901)
+        const regex = /([A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s*\((\d{11})\)/g;
+        let match;
+        const teachersToAdd = [];
+        
+        while ((match = regex.exec(fullText)) !== null) {
+            let name = match[1].trim();
+            const tc = match[2];
+            const pin = tc.substring(0, 6);
+            
+            // "ÖĞRENİM DURUMU" veya "Uzman Öğretmen" gibi başlıklar isme yapışmışsa temizle
+            name = name.replace(/ÖĞRENİM DURUMU/gi, '').replace(/Uzman Öğretmen/gi, '').replace(/Başöğretmen/gi, '').trim();
+            if (name.length < 3) continue;
+            
+            // Branş tespiti için ismin geçtiği yerden sonraki kısımlara bakalım (isteğe bağlı, genel branş atayalım bulamazsak)
+            // MEBBİS PDF'lerinde genelde branşlar Lisans veya Yüksek Lisans'tan sonra gelir.
+            // Fakat metin karmaşık olabileceği için temel branşı 'Branş Belirtilmemiş' yapıp, 
+            // idarecinin listeden düzenlemesine olanak tanımak en güvenlisidir. 
+            // (Karmaşık Regex ile branş bulmaya çalışmak bazı öğretmenleri atlamaya sebep olabilir)
+            
+            let branch = "";
+            const textAfter = fullText.substring(match.index + match[0].length, match.index + match[0].length + 200);
+            const branchMatch = textAfter.match(/(?:Lisans|Lisansüstü|TEZLİ|TEZSİZ|Ön Lisans).*?\s([A-Za-zÇĞİÖŞÜçğıöşü\s]+?)\s*\//);
+            if (branchMatch && branchMatch[1]) {
+                branch = branchMatch[1].replace(/\)/g, '').trim();
+                // Bazen öğretmen ibaresi de gelir
+                if (branch.includes("Öğretmen")) branch = branch.replace(/Öğretmen(i|liği|lik)?/gi, '').trim();
+            }
+            
+            teachersToAdd.push({
+                name: name,
+                tc: tc,
+                pin: pin,
+                branch: branch || 'Belirtilmemiş'
+            });
+        }
+        
+        if (teachersToAdd.length > 0) {
+            let addedCount = 0;
+            let batch = db.batch();
+            let opCount = 0;
+            
+            for (const t of teachersToAdd) {
+                const docRef = db.collection('teachers').doc();
+                batch.set(docRef, {
+                    name: t.name,
+                    branch: t.branch,
+                    pin: t.pin,
+                    active: true,
+                    addedVia: 'bulk_import'
+                });
+                addedCount++;
+                opCount++;
+                
+                if (opCount >= 450) {
+                    await batch.commit();
+                    batch = db.batch();
+                    opCount = 0;
+                }
+            }
+            
+            if (opCount > 0) {
+                await batch.commit();
+            }
+            
+            showToast(`Başarılı! ${addedCount} öğretmen (PDF/Excel'den) eklendi.`, "success");
+            await loadTeachers();
+            await loadTeacherCount();
+        } else {
+            showToast("Dosyada geçerli T.C. Kimlik formatı (Örn: AD SOYAD (12345678901)) bulunamadı.", "warning");
+        }
+        
+        event.target.value = '';
+        showLoading(false);
+        
+    } catch(err) {
+        console.error(err);
+        showLoading(false);
+        event.target.value = '';
+        showToast("Dosya okunurken bir hata oluştu. PDF formatı desteklenmiyor olabilir.", "error");
+    }
+}
