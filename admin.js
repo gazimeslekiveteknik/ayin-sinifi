@@ -1407,10 +1407,10 @@ async function handleMebbisExcel(event) {
             // (Karmaşık Regex ile branş bulmaya çalışmak bazı öğretmenleri atlamaya sebep olabilir)
             
             let branch = "";
-            const textAfter = fullText.substring(match.index + match[0].length, match.index + match[0].length + 400);
-            const branchMatch = textAfter.match(/(?:Lisans|Lisansüstü|TEZLİ|TEZSİZ|Ön Lisans|Doktora)[\s\S]*?\n([A-Za-zÇĞİÖŞÜçğıöşü\s]+?)\s*\//);
+            const textAfter = fullText.substring(match.index + match[0].length, match.index + match[0].length + 1000);
+            const branchMatch = textAfter.match(/(?:Lisans|Lisansüstü|TEZLİ|TEZSİZ|Ön Lisans|Doktora)[)\s]*([A-Za-zÇĞİÖŞÜçğıöşüâÂîÎûÛ\s]+?)\s*\//);
             if (branchMatch && branchMatch[1]) {
-                branch = branchMatch[1].replace(/\)/g, '').trim();
+                branch = branchMatch[1].replace(/\n/g, ' ').trim();
                 // Bazen öğretmen ibaresi de gelir
                 if (branch.includes("Öğretmen")) branch = branch.replace(/Öğretmen(i|liği|lik)?/gi, '').trim();
             }
