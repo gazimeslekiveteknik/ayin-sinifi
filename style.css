@@ -1413,7 +1413,7 @@ body {
 /* ============================================= */
 .qr-print-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin-top: 20px;
 }
@@ -1472,7 +1472,7 @@ body {
         top: 0;
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         grid-auto-rows: calc(290mm / 5); /* A4 kağıt uzunluğuna göre paylaştır */
         gap: 0;
     }
