@@ -859,3 +859,57 @@ function copyToClipboard(text, btn) {
         showToast('Kopyalama başarısız. Elle kopyalayın.', 'warning');
     });
 }
+
+// ==========================================
+// KAREKOD (QR) OLUŞTURMA VE YAZDIRMA
+// ==========================================
+function generateAllQRCodes() {
+    const printArea = document.getElementById('printArea');
+    const printBtn = document.getElementById('printQrBtn');
+    
+    // Temizle
+    printArea.innerHTML = '';
+    
+    // Vercel linkiniz (Sitenizin kök adresi)
+    const baseUrl = window.location.origin;
+    
+    APP_CONFIG.classes.forEach(sinif => {
+        const qrUrl = `${baseUrl}/oyla.html?sinif=${encodeURIComponent(sinif)}`;
+        
+        // Etiket Konteyneri
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'qr-label';
+        
+        // Sınıf Başlığı
+        const title = document.createElement('h3');
+        title.textContent = `${sinif} Sınıfı`;
+        labelDiv.appendChild(title);
+        
+        // QR Kod Alanı
+        const qrDiv = document.createElement('div');
+        qrDiv.className = 'qr-code-img';
+        labelDiv.appendChild(qrDiv);
+        
+        // Alt Bilgi
+        const footer = document.createElement('div');
+        footer.className = 'qr-footer';
+        footer.textContent = "Okut ve Oyla";
+        labelDiv.appendChild(footer);
+        
+        printArea.appendChild(labelDiv);
+        
+        // QR Kodu Çizdir
+        new QRCode(qrDiv, {
+            text: qrUrl,
+            width: 120,
+            height: 120,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    });
+    
+    // Yazdır butonunu göster
+    printBtn.classList.remove('hidden');
+    showToast("Karekodlar oluşturuldu! Yazdır butonuna basabilirsiniz.", "success");
+}
