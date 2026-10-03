@@ -252,12 +252,13 @@ async function loadTeachers() {
     
     snapshot.forEach(doc => {
         const teacher = doc.data();
-        const initials = teacher.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const safeName = teacher.name || 'Bilinmiyor';
+        const initials = safeName.split(' ').filter(n => n).map(n => n[0]).join('').toUpperCase().slice(0, 2);
         
         const item = document.createElement('div');
         item.className = 'teacher-item';
         item.innerHTML = `
-            <div class="teacher-detail">
+            <div class="teacher-detail" style="cursor:pointer;" onclick="openEditTeacherModal('${doc.id}', '${safeName.replace(/'/g, "\'")}', '${(teacher.branch || '').replace(/'/g, "\'")}', '${teacher.pin}')" title="Düzenlemek için tıklayın">
                 <div class="teacher-avatar">${initials}</div>
                 <div>
                     <strong>${teacher.name}</strong>
