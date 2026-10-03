@@ -6,8 +6,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Ayarları sunucudan çek (okul ismi vb.)
     await loadRemoteSettings();
-    const sName = document.getElementById('kioskSchoolName');
-    if(sName) sName.textContent = APP_CONFIG.schoolName;
+    
 
 
     // Verileri Dinlemeye Başla (Gerçek Zamanlı)
