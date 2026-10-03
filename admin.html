@@ -395,5 +395,35 @@
     <!-- Admin Mantığı -->
     <script src="admin.js"></script>
 
+
+    <!-- ========== ÖĞRETMEN DÜZENLEME MODALI ========== -->
+    <div id="editTeacherModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2 style="color:var(--primary);"><i class="fas fa-user-edit"></i> Öğretmen Bilgilerini Düzenle</h2>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <label>Ad Soyad</label>
+                <input type="text" id="editTeacherName" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label>Branşı</label>
+                <input type="text" id="editTeacherBranch" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label>Giriş Şifresi (PIN)</label>
+                <input type="text" id="editTeacherPin" class="form-input" maxlength="6">
+            </div>
+            
+            <input type="hidden" id="editTeacherId">
+            
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="closeEditTeacherModal()">İptal</button>
+                <button class="btn btn-primary" onclick="saveTeacherEdit()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

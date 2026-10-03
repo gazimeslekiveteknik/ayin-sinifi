@@ -1156,31 +1156,40 @@ function switchSettingsSection(sectionId, btn) {
 
 
 // ============================================
-// ÖĞRETMEN DÜZENLEME
+// ÖĞRETMEN DÜZENLEME (MODAL)
 // ============================================
-async function editTeacher(teacherId, oldName, oldBranch, oldPin) {
-    const newName = window.prompt("Öğretmen Adı Soyadı:", oldName);
-    if(newName === null) return;
+function openEditTeacherModal(id, name, branch, pin) {
+    document.getElementById('editTeacherId').value = id;
+    document.getElementById('editTeacherName').value = name;
+    document.getElementById('editTeacherBranch').value = branch;
+    document.getElementById('editTeacherPin').value = pin;
+    document.getElementById('editTeacherModal').classList.remove('hidden');
+}
+
+function closeEditTeacherModal() {
+    document.getElementById('editTeacherModal').classList.add('hidden');
+}
+
+async function saveTeacherEdit() {
+    const id = document.getElementById('editTeacherId').value;
+    const newName = document.getElementById('editTeacherName').value.trim();
+    const newBranch = document.getElementById('editTeacherBranch').value.trim();
+    const newPin = document.getElementById('editTeacherPin').value.trim();
     
-    const newBranch = window.prompt("Branşı:", oldBranch);
-    if(newBranch === null) return;
-    
-    const newPin = window.prompt("Giriş Şifresi (PIN):", oldPin);
-    if(newPin === null) return;
-    
-    if(newName.trim() === '' || newPin.trim() === '') {
+    if(!newName || !newPin) {
         showToast("İsim ve PIN boş olamaz!", "warning");
         return;
     }
     
+    closeEditTeacherModal();
     showLoading(true, "Güncelleniyor...");
     try {
-        await db.collection('teachers').doc(teacherId).update({
-            name: newName.trim(),
-            branch: newBranch.trim(),
-            pin: newPin.trim()
+        await db.collection('teachers').doc(id).update({
+            name: newName,
+            branch: newBranch,
+            pin: newPin
         });
-        showToast("Öğretmen başarıyla güncellendi.", "success");
+        showToast("Öğretmen bilgileri başarıyla güncellendi.", "success");
         await loadTeachers();
     } catch(e) {
         console.error(e);
