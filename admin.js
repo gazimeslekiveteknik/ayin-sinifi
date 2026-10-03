@@ -1337,7 +1337,24 @@ async function handleMebbisExcel(event) {
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
-                fullText += textContent.items.map(s => s.str).join(' ') + ' ';
+                
+                let lastItem = null;
+                for (const item of textContent.items) {
+                    if (lastItem) {
+                        const yDiff = Math.abs(item.transform[5] - lastItem.transform[5]);
+                        // transform[4] is X, transform[5] is Y. item.width is the width of the text.
+                        const xDiff = item.transform[4] - (lastItem.transform[4] + lastItem.width);
+                        
+                        if (yDiff > 5) {
+                            fullText += '\n';
+                        } else if (xDiff > 3 && !fullText.endsWith(' ') && !fullText.endsWith('\n') && item.str.trim() !== '') {
+                            fullText += ' ';
+                        }
+                    }
+                    fullText += item.str;
+                    lastItem = item;
+                }
+                fullText += '\n';
             }
         } else {
             // XLSX ile Excel oku
@@ -1373,15 +1390,16 @@ async function handleMebbisExcel(event) {
             const tc = match[2];
             const pin = tc.substring(0, 6);
             
-            // "ÖĞRENİM DURUMU" veya "Uzman Öğretmen" gibi başlıklar isme yapışmışsa temizle
-            name = name.replace(/ÖĞRENİM DURUMU/gi, '').replace(/Uzman Öğretmen/gi, '').replace(/Başöğretmen/gi, '').trim();
+            // Gereksiz MEBBİS başlıklarını ve ünvanları temizle
+            name = name.replace(/Ö[GĞÖ]*R[E]*N[İI]M\s*DURUMU/gi, '');
+            name = name.replace(/Uzman\s*Öğretmen/gi, '');
+            name = name.replace(/UzmanÖğretmen/gi, '');
+            name = name.replace(/Başöğretmen/gi, '');
+            name = name.replace(/Sözleşmeli/gi, '');
+            // Eğer ünvan isimle bitişik gelmişse örn: "UzmanÖğ retmen AYGÜL"
+            name = name.replace(/UzmanÖğ\s*retmen/gi, '');
             
-            // PDF'ten kaynaklı kopuk harf boşluklarını düzelt (Örn: "AL İ HAL İ D AKDA Ğ" -> "ALİ HALİD AKDAĞ")
-            let oldName = '';
-            while (oldName !== name) {
-                oldName = name;
-                name = name.replace(/ ([A-ZÇĞİÖŞÜa-zçğıöşü])(?=\s|$)/g, '$1');
-            }
+            name = name.trim();
             
             if (name.length < 3) continue;
             
@@ -1393,7 +1411,7 @@ async function handleMebbisExcel(event) {
             
             let branch = "";
             const textAfter = fullText.substring(match.index + match[0].length, match.index + match[0].length + 200);
-            const branchMatch = textAfter.match(/(?:Lisans|Lisansüstü|TEZLİ|TEZSİZ|Ön Lisans).*?\s([A-Za-zÇĞİÖŞÜçğıöşü\s]+?)\s*\//);
+            const branchMatch = textAfter.match(/(?:Lisans|Lisansüstü|TEZLİ|TEZSİZ|Ön Lisans).*?\n([A-Za-zÇĞİÖŞÜçğıöşü\s]+?)\s*\//);
             if (branchMatch && branchMatch[1]) {
                 branch = branchMatch[1].replace(/\)/g, '').trim();
                 // Bazen öğretmen ibaresi de gelir
