@@ -112,6 +112,15 @@ async function refreshData() {
  * @param {string} tabName - Gösterilecek tab adı
  */
 function switchTab(tabName) {
+    // Ayarlar sekmesine girerken ekstra şifre onayı
+    if (tabName === 'settings') {
+        const pass = window.prompt("Güvenlik Onayı: Ayarlara girmek için yönetici şifresini tekrar girin:");
+        if (pass !== APP_CONFIG.adminPassword) {
+            showToast("Hatalı şifre. Ayarlara erişim reddedildi.", "error");
+            return;
+        }
+    }
+
     currentTab = tabName;
     
     // Tab butonlarını güncelle
