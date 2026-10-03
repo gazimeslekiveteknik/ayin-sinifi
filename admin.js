@@ -1346,6 +1346,11 @@ async function handleMebbisExcel(event) {
         // Temizlik: Bazen MEBBIS dosyalarında boşluklar veya gereksiz karakterler olur
         fullText = fullText.replace(/\s+/g, ' ');
         
+        // Çift kayıt engelleme: Veritabanındaki mevcut şifreleri (PIN) al
+        const existingSnapshot = await db.collection('teachers').get();
+        const existingPins = new Set();
+        existingSnapshot.forEach(doc => existingPins.add(doc.data().pin));
+
         // Düzenli ifade (Regex) ile isim ve 11 haneli T.C.'yi yakala
         // Format: AD SOYAD (12345678901)
         const regex = /([A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜa-zçğıöşü\s]+?)\s*\((\d{11})\)/g;
@@ -1383,6 +1388,10 @@ async function handleMebbisExcel(event) {
                 // Bazen öğretmen ibaresi de gelir
                 if (branch.includes("Öğretmen")) branch = branch.replace(/Öğretmen(i|liği|lik)?/gi, '').trim();
             }
+            
+            // Aynı PIN daha önce eklenmişse veya bu dosya içinde varsa atla (Çift Kayıt Koruması)
+            if (existingPins.has(pin)) continue;
+            existingPins.add(pin);
             
             teachersToAdd.push({
                 name: name,
@@ -1436,4 +1445,45 @@ async function handleMebbisExcel(event) {
         event.target.value = '';
         showToast("Dosya okunurken bir hata oluştu. PDF formatı desteklenmiyor olabilir.", "error");
     }
+}
+
+async function deleteAllTeachers() {
+    if (!confirm("DİKKAT: Listedeki TÜM öğretmenler kalıcı olarak silinecek! Emin misiniz?")) return;
+    
+    showLoading(true, "Tüm öğretmenler siliniyor...");
+    try {
+        const snapshot = await db.collection('teachers').get();
+        if (snapshot.empty) {
+            showLoading(false);
+            showToast("Silinecek öğretmen bulunamadı.", "info");
+            return;
+        }
+        
+        let batch = db.batch();
+        let count = 0;
+        let opCount = 0;
+        
+        for (const doc of snapshot.docs) {
+            batch.delete(doc.ref);
+            count++;
+            opCount++;
+            
+            if (opCount >= 450) {
+                await batch.commit();
+                batch = db.batch();
+                opCount = 0;
+            }
+        }
+        if (opCount > 0) {
+            await batch.commit();
+        }
+        
+        showToast(`Toplam ${count} öğretmen silindi.`, "success");
+        await loadTeachers();
+        await loadTeacherCount();
+    } catch(err) {
+        console.error(err);
+        showToast("Silme işlemi başarısız oldu.", "error");
+    }
+    showLoading(false);
 }
