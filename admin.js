@@ -4,7 +4,7 @@
 // ============================================
 
 // ---------- Durum Değişkenleri ----------
-let currentTab = 'leaderboard';
+let currentTab = 'reports';
 let leaderboardData = [];
 let yearlyData = {};
 
