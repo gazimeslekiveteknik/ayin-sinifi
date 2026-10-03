@@ -592,9 +592,12 @@ function renderVoteDetailsSorted(docs) {
         card.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <span class="vote-teacher">👤 ${data.teacherName}</span>
-                <span style="background:var(--primary-light); padding:2px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; color:var(--primary);">
-                    ${data.classId}
-                </span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span style="background:var(--primary-light); padding:2px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; color:var(--primary);">
+                        ${data.classId}
+                    </span>
+                    <button onclick="deleteVote('${doc.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:1.1rem; padding:0 4px;" title="Bu Oyu Sil">🗑️</button>
+                </div>
             </div>
             <div class="vote-date">📅 ${date} ${time} • Ort: ${data.avgScore?.toFixed(1) || '-'}</div>
             <div class="vote-criteria-list">${criteriaHTML}</div>
@@ -1156,6 +1159,25 @@ async function saveSettings() {
 
 
 // Ayarlar içi menü geçişi
+function switchReportSection(sectionId, btn) {
+    const container = btn.closest('.settings-layout');
+    
+    // Update buttons
+    container.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // Update sections
+    container.querySelectorAll('.settings-section').forEach(sec => {
+        if (sec.id === 'rep-' + sectionId) {
+            sec.classList.add('active');
+            sec.classList.remove('hidden');
+        } else if (sec.id.startsWith('rep-')) {
+            sec.classList.remove('active');
+            sec.classList.add('hidden');
+        }
+    });
+}
+
 function switchSettingsSection(sectionId, btn) {
     document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));

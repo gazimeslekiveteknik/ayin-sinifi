@@ -79,7 +79,7 @@ function checkSession() {
     
     // Oturum yoksa giriş ekranını göster
     showScreen('loginScreen');
-    setupPinInputs();
+    loadTeachersList();
 }
 
 /**
@@ -106,125 +106,143 @@ function logout() {
     window.location.reload();
 }
 
-// ============================================
-// PIN GİRİŞ SİSTEMİ
-// ============================================
-
 /**
- * PIN giriş kutucuklarını yapılandırır
- * Her kutucuğa girilen rakamdan sonra otomatik sonrakine geçer
+ * Aktif öğretmen listesini getirir ve select box'a doldurur
  */
-function setupPinInputs() {
-    const inputs = document.querySelectorAll('.pin-input');
-    
-    inputs.forEach((input, index) => {
-        // Rakam girildiğinde sonraki kutucuğa geç
-        input.addEventListener('input', (e) => {
-            const value = e.target.value;
-            
-            // Sadece tek rakam kabul et
-            if (value.length > 1) {
-                e.target.value = value.slice(-1);
-            }
-            
-            // Sonraki kutucuğa geç
-            if (value && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-            
-            // Son kutucuk dolduğunda otomatik doğrula
-            if (index === inputs.length - 1 && value) {
-                verifyPIN();
-            }
-        });
+async function loadTeachersList() {
+    try {
+        const snapshot = await db.collection('teachers').orderBy('name').get();
+        const select = document.getElementById('teacherSelect');
+        if(!select) return; // errorScreen'de ise vb.
         
-        // Backspace ile önceki kutucuğa dön
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                inputs[index - 1].focus();
-                inputs[index - 1].value = '';
-            }
-        });
+        // Önceki öğretmenleri temizle (varsayılan option hariç)
+        select.innerHTML = '<option value="">-- Öğretmen Seçiniz --</option>';
         
-        // Yapıştırma desteği
-        input.addEventListener('paste', (e) => {
-            e.preventDefault();
-            const pastedData = (e.clipboardData || window.clipboardData).getData('text').trim();
-            const digits = pastedData.replace(/\D/g, '').split('');
-            
-            digits.forEach((digit, i) => {
-                if (inputs[index + i]) {
-                    inputs[index + i].value = digit;
-                }
-            });
-            
-            // Son doldurulana odaklan
-            const lastIndex = Math.min(index + digits.length - 1, inputs.length - 1);
-            inputs[lastIndex].focus();
-            
-            if (index + digits.length >= inputs.length) {
-                verifyPIN();
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.active !== false) { // undefined veya true
+                const opt = document.createElement('option');
+                opt.value = doc.id;
+                opt.textContent = data.name + (data.branch ? ` (${data.branch})` : '');
+                opt.dataset.pin = data.pin; // Doğrulama için PIN'i dataset'te tut (şifre olarak)
+                select.appendChild(opt);
             }
         });
-    });
-    
-    // İlk kutucuğa odaklan
-    setTimeout(() => inputs[0].focus(), 300);
+    } catch(e) {
+        console.error(e);
+        showToast("Öğretmen listesi yüklenemedi", "error");
+    }
 }
 
 /**
- * Girilen PIN'i veritabanından doğrular
+ * Dropdown ve şifre ile giriş kontrolü yapar
  */
-async function verifyPIN() {
-    const inputs = document.querySelectorAll('.pin-input');
-    let pin = '';
-    inputs.forEach(input => pin += input.value);
+async function verifyLogin() {
+    const select = document.getElementById('teacherSelect');
+    const pwdInput = document.getElementById('teacherPassword');
     
-    // 6 haneli mi kontrol et
-    if (pin.length !== 6) {
-        showToast('Lütfen 6 haneli PIN kodunuzu girin.', 'warning');
+    if(!select || !pwdInput) return;
+    
+    const teacherId = select.value;
+    const pwd = pwdInput.value;
+    
+    if (!teacherId) {
+        showToast('Lütfen isminizi seçiniz', 'warning');
         return;
     }
     
-    showLoading(true, 'Doğrulanıyor...');
+    if (!pwd) {
+        showToast('Lütfen şifrenizi giriniz', 'warning');
+        return;
+    }
+    
+    showLoading(true, 'Giriş yapılıyor...');
     
     try {
-        // Firestore'da öğretmen PIN'ini ara
-        const snapshot = await db.collection('teachers')
-            .where('pin', '==', pin)
-            .where('active', '==', true)
-            .get();
+        const selectedOption = select.options[select.selectedIndex];
+        const actualPin = selectedOption.dataset.pin;
         
-        if (snapshot.empty) {
+        if (pwd !== actualPin) {
             showLoading(false);
-            showToast('Geçersiz PIN kodu! Lütfen tekrar deneyin.', 'error');
-            // PIN kutucuklarını temizle
-            inputs.forEach(input => input.value = '');
-            inputs[0].focus();
+            showToast('Hatalı şifre! Lütfen tekrar deneyin.', 'error');
+            pwdInput.value = '';
+            pwdInput.focus();
             return;
         }
         
-        // Öğretmen bulundu
-        const teacherDoc = snapshot.docs[0];
+        // Giriş Başarılı
+        const rawName = selectedOption.textContent.split(' (')[0];
         const teacherData = {
-            id: teacherDoc.id,
-            name: teacherDoc.data().name,
-            pin: pin
+            id: teacherId,
+            name: rawName,
+            pin: pwd
         };
         
-        // Oturumu kaydet
         saveSession(teacherData);
+        pwdInput.value = ''; // Temizle
         
         showLoading(false);
         showToast(`Hoş geldiniz, ${teacherData.name}!`, 'success');
         
-        // Oylama ekranına geç
         onTeacherVerified();
         
     } catch (error) {
         showLoading(false);
-        console.error('PIN doğrulama hatası:', error);
+        console.error('Giriş hatası:', error);
         showToast('Bir hata oluştu. Lütfen tekrar deneyin.', 'error');
+    }
+}
+
+// ============================================
+// ŞİFRE DEĞİŞTİRME
+// ============================================
+
+function openChangePassword() {
+    document.getElementById('changePwdModal').classList.remove('hidden');
+    document.getElementById('oldPwd').value = '';
+    document.getElementById('newPwd').value = '';
+}
+
+function closeChangePassword() {
+    document.getElementById('changePwdModal').classList.add('hidden');
+}
+
+async function saveNewPassword() {
+    const oldPwd = document.getElementById('oldPwd').value;
+    const newPwd = document.getElementById('newPwd').value.trim();
+    
+    if(!oldPwd || !newPwd) {
+        return showToast('Lütfen tüm alanları doldurun', 'warning');
+    }
+    
+    if(newPwd.length < 4) {
+        return showToast('Yeni şifre en az 4 haneli olmalıdır', 'warning');
+    }
+    
+    showLoading(true, 'Şifre güncelleniyor...');
+    
+    try {
+        const docRef = db.collection('teachers').doc(currentTeacher.teacherId);
+        const doc = await docRef.get();
+        
+        if(doc.data().pin !== oldPwd) {
+            showLoading(false);
+            return showToast('Eski şifreniz hatalı', 'error');
+        }
+        
+        await docRef.update({ pin: newPwd });
+        
+        // Session bilgisini de güncelle
+        currentTeacher.pin = newPwd;
+        sessionStorage.setItem('teacherSession', JSON.stringify(currentTeacher));
+        
+        showLoading(false);
+        showToast('Şifreniz başarıyla değiştirildi!', 'success');
+        closeChangePassword();
+    } catch(e) {
+        console.error(e);
+        showLoading(false);
+        showToast('Hata oluştu', 'error');
     }
 }
 

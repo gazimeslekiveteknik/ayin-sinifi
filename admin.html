@@ -99,7 +99,21 @@
         <!-- ===== TAB PANELLERİ ===== -->
 
         <!-- ---- 1. Aylık Sıralama (Leaderboard) ---- -->
-        <div class="tab-panel active" id="tab-leaderboard">
+        <div class="tab-panel active" id="tab-reports">
+            <div class="settings-layout">
+                <!-- Sol Menü (Raporlar) -->
+                <div class="settings-sidebar">
+                    <button class="settings-nav-btn active" onclick="switchReportSection('leaderboard', this)"><i class="fas fa-trophy"></i> Aylık Sıralama</button>
+                    <button class="settings-nav-btn" onclick="switchReportSection('yearly', this)"><i class="fas fa-star"></i> Yıl Sonu Şampiyonları</button>
+                    <button class="settings-nav-btn" onclick="switchReportSection('votes', this)"><i class="fas fa-chart-bar"></i> Oy Detayları</button>
+                    <button class="settings-nav-btn" onclick="switchReportSection('archive', this)"><i class="fas fa-archive"></i> Geçmiş Aylar (Arşiv)</button>
+                </div>
+                
+                <!-- Sağ İçerik (Raporlar) -->
+                <div class="settings-content">
+                    
+                    <!-- 1. Sıralama -->
+                    <div id="rep-leaderboard" class="settings-section active">
             <div class="admin-card">
                 <h2>🏆 Aylık Liderlik Tablosu - <span id="leaderboardMonth">-</span></h2>
                 <table class="leaderboard-table">
@@ -134,7 +148,9 @@
         </div>
 
         <!-- ---- 2. Yıl Sonu Büyük Ödül ---- -->
-        <div class="tab-panel" id="tab-yearly">
+        </div>
+                    <!-- 2. Yıl Sonu -->
+                    <div id="rep-yearly" class="settings-section hidden">
             <div class="admin-card">
                 <h2>⭐ Yıllık Şampiyonluk Tablosu - Büyük Ödüle Kalan Yol</h2>
                 <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem;">
@@ -163,7 +179,9 @@
         </div>
 
         <!-- ---- 3. Oy Detayları ---- -->
-        <div class="tab-panel" id="tab-votes">
+        </div>
+                    <!-- 3. Oy Detayları -->
+                    <div id="rep-votes" class="settings-section hidden">
             <div class="admin-card">
                 <h2>📊 Bu Ayki Oy Detayları</h2>
                 <div class="form-group" style="max-width:300px;">
@@ -181,7 +199,9 @@
         </div>
 
         <!-- ---- 5. Arşiv ---- -->
-        <div class="tab-panel" id="tab-archive">
+        </div>
+                    <!-- 4. Arşiv -->
+                    <div id="rep-archive" class="settings-section hidden">
             <div class="admin-card">
                 <h2>📁 Geçmiş Aylar Arşivi</h2>
                 <div class="archive-list" id="archiveList">
@@ -195,6 +215,11 @@
         <!-- ---- 6. Ayarlar ---- -->
                 
         <!-- ---- Karekodlar ---- -->
+        </div>
+                </div>
+            </div>
+        </div>
+
         <div class="tab-panel" id="tab-qr">
             <div class="admin-card no-print">
                 <h2><i class="fas fa-qrcode"></i> Toplu Karekod Üretici</h2>
