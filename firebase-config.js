@@ -190,12 +190,14 @@ async function loadRemoteSettings() {
             if(data.schoolName) APP_CONFIG.schoolName = data.schoolName;
             if(data.classes) APP_CONFIG.classes = data.classes;
             if(data.adminPassword) APP_CONFIG.adminPassword = data.adminPassword;
+            if(data.criteria) APP_CONFIG.criteria = data.criteria;
         } else {
             // İlk kurulumsa varsayılanları veritabanına yaz
             await docRef.set({
                 schoolName: APP_CONFIG.schoolName,
                 classes: APP_CONFIG.classes,
-                adminPassword: APP_CONFIG.adminPassword
+                adminPassword: APP_CONFIG.adminPassword,
+                criteria: APP_CONFIG.criteria
             });
         }
     } catch (e) {

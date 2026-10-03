@@ -189,7 +189,7 @@ function renderLeaderboard() {
         let trophy = rank === 1 ? ' 🏆' : rank === 2 ? ' 🥈' : rank === 3 ? ' 🥉' : '';
         
         return `
-            <tr>
+            <tr style="cursor:pointer; transition:background 0.2s;" onclick="showClassDetails('${item.classId}')" title="Sınıfın oy detaylarını görmek için tıklayın" onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background=''">
                 <td><span class="rank-badge ${rankClass}">${rank}</span></td>
                 <td>
                     <span class="class-name-cell">
@@ -941,26 +941,181 @@ function generateAllQRCodes() {
 }
 
 
+
 // ==========================================
-// AYARLAR (SETTINGS) YÖNETİMİ
+// SINIF İSTATİSTİK DETAYLARI
 // ==========================================
-function populateSettingsUI() {
-    if(document.getElementById('settingSchoolName')) {
-        document.getElementById('settingSchoolName').value = APP_CONFIG.schoolName;
-        document.getElementById('settingAdminPassword').value = APP_CONFIG.adminPassword;
-        document.getElementById('settingClasses').value = APP_CONFIG.classes.join(', ');
+async function showClassDetails(classId) {
+    const modal = document.getElementById('classDetailsModal');
+    const title = document.getElementById('cdModalTitle');
+    const subtitle = document.getElementById('cdModalSubtitle');
+    const content = document.getElementById('cdModalContent');
+    
+    title.textContent = `${classId} Sınıfı İstatistikleri`;
+    subtitle.textContent = "Veriler yükleniyor...";
+    content.innerHTML = '<div class="spinner" style="margin: 0 auto;"></div>';
+    modal.classList.remove('hidden');
+    
+    const monthKey = document.getElementById('monthSelector').value;
+    
+    try {
+        const snapshot = await db.collection('votes')
+            .where('monthKey', '==', monthKey)
+            .where('classId', '==', classId)
+            .get();
+            
+        if(snapshot.empty) {
+            content.innerHTML = '<p>Bu ay hiç oy alınmamış.</p>';
+            subtitle.textContent = "";
+            return;
+        }
+        
+        let totals = {};
+        let counts = {};
+        let totalVotes = 0;
+        
+        APP_CONFIG.criteria.forEach(c => {
+            totals[c.id] = 0;
+            counts[c.id] = 0;
+        });
+        
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            totalVotes++;
+            for(const [critId, stars] of Object.entries(data.ratings)) {
+                if(totals[critId] !== undefined) {
+                    totals[critId] += stars;
+                    counts[critId]++;
+                }
+            }
+        });
+        
+        subtitle.textContent = `Bu ay toplam ${totalVotes} öğretmen oy vermiş.`;
+        
+        let html = '';
+        APP_CONFIG.criteria.forEach(c => {
+            const avg = counts[c.id] > 0 ? (totals[c.id] / counts[c.id]).toFixed(1) : 0;
+            const percent = (avg / 5) * 100;
+            const color = avg >= 4 ? 'var(--success)' : avg >= 2.5 ? 'var(--warning)' : 'var(--danger)';
+            
+            html += `
+                <div style="background:var(--bg); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <strong>${c.icon} ${c.title}</strong>
+                        <span style="font-weight:700; color:${color};">⭐ ${avg} / 5</span>
+                    </div>
+                    <div style="width:100%; height:12px; background:rgba(0,0,0,0.05); border-radius:6px; overflow:hidden;">
+                        <div style="width:${percent}%; height:100%; background:${color}; border-radius:6px;"></div>
+                    </div>
+                </div>
+            `;
+        });
+        content.innerHTML = html;
+        
+    } catch(e) {
+        console.error(e);
+        content.innerHTML = '<p style="color:red;">Veriler yüklenirken hata oluştu.</p>';
     }
+}
+
+// ==========================================
+// AYARLAR (SETTINGS) YÖNETİMİ YENİ SİSTEM
+// ==========================================
+let editingClasses = [];
+let editingCriteria = [];
+
+function populateSettingsUI() {
+    if(!document.getElementById('settingSchoolName')) return;
+    
+    document.getElementById('settingSchoolName').value = APP_CONFIG.schoolName;
+    document.getElementById('settingAdminPassword').value = APP_CONFIG.adminPassword;
+    
+    editingClasses = [...APP_CONFIG.classes];
+    editingCriteria = JSON.parse(JSON.stringify(APP_CONFIG.criteria));
+    
+    renderSettingClasses();
+    renderSettingCriteria();
+}
+
+function renderSettingClasses() {
+    const container = document.getElementById('settingClassesContainer');
+    container.innerHTML = editingClasses.map((c, i) => `
+        <span style="background:var(--primary-light); color:var(--primary-dark); padding:6px 12px; border-radius:20px; font-weight:600; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--primary);">
+            ${c}
+            <i class="fas fa-times" style="cursor:pointer; color:var(--danger);" onclick="removeSettingClass(${i})"></i>
+        </span>
+    `).join('');
+}
+
+function addSettingClass() {
+    const inp = document.getElementById('newClassInput');
+    const val = inp.value.trim().toUpperCase();
+    if(val && !editingClasses.includes(val)) {
+        editingClasses.push(val);
+        inp.value = '';
+        renderSettingClasses();
+    }
+}
+
+function removeSettingClass(index) {
+    editingClasses.splice(index, 1);
+    renderSettingClasses();
+}
+
+function renderSettingCriteria() {
+    const container = document.getElementById('settingCriteriaContainer');
+    container.innerHTML = editingCriteria.map((c, i) => `
+        <div style="background:#fff; border:1px solid var(--border); padding:12px; border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div style="font-weight:700; font-size:0.95rem;">${c.icon || '📌'} ${c.title}</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);">${c.description}</div>
+            </div>
+            <button class="btn btn-sm btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="removeSettingCriterion(${i})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function addSettingCriterion() {
+    const tInp = document.getElementById('newCritTitle');
+    const dInp = document.getElementById('newCritDesc');
+    const title = tInp.value.trim();
+    const desc = dInp.value.trim();
+    
+    if(!title || !desc) {
+        showToast("Lütfen başlık ve açıklama girin", "warning");
+        return;
+    }
+    
+    editingCriteria.push({
+        id: "crit_" + Date.now(),
+        title: title,
+        description: desc,
+        icon: "📌",
+        goal: ""
+    });
+    
+    tInp.value = '';
+    dInp.value = '';
+    renderSettingCriteria();
+}
+
+function removeSettingCriterion(index) {
+    if(editingCriteria.length <= 1) {
+        showToast("En az 1 kriter kalmalıdır!", "error");
+        return;
+    }
+    editingCriteria.splice(index, 1);
+    renderSettingCriteria();
 }
 
 async function saveSettings() {
     const newSchoolName = document.getElementById('settingSchoolName').value.trim();
     const newPassword = document.getElementById('settingAdminPassword').value.trim();
-    const newClassesStr = document.getElementById('settingClasses').value;
     
-    const newClasses = newClassesStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
-    
-    if(!newSchoolName || !newPassword || newClasses.length === 0) {
-        showToast("Lütfen tüm alanları doldurun.", "error");
+    if(!newSchoolName || !newPassword || editingClasses.length === 0 || editingCriteria.length === 0) {
+        showToast("Okul adı, şifre, sınıflar veya kriterler boş olamaz!", "error");
         return;
     }
     
@@ -969,14 +1124,16 @@ async function saveSettings() {
         await db.collection('settings').doc('general').set({
             schoolName: newSchoolName,
             adminPassword: newPassword,
-            classes: newClasses
+            classes: editingClasses,
+            criteria: editingCriteria
         }, {merge: true});
         
         APP_CONFIG.schoolName = newSchoolName;
         APP_CONFIG.adminPassword = newPassword;
-        APP_CONFIG.classes = newClasses;
+        APP_CONFIG.classes = [...editingClasses];
+        APP_CONFIG.criteria = JSON.parse(JSON.stringify(editingCriteria));
         
-        showToast("Ayarlar başarıyla kaydedildi! Sayfa yenileniyor...", "success");
+        showToast("Tüm ayarlar başarıyla kaydedildi! Sitemiz yenileniyor...", "success");
         setTimeout(() => window.location.reload(), 1500);
     } catch(e) {
         console.error(e);

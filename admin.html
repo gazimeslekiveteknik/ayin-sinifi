@@ -225,10 +225,9 @@
         </div>
 
         <!-- ---- 6. Ayarlar ---- -->
-        <div class="tab-panel" id="tab-settings">
+                <div class="tab-panel" id="tab-settings">
             <div class="admin-card">
                 <h2><i class="fas fa-cog"></i> Genel Sistem Ayarları</h2>
-                <p style="margin-bottom: 20px; color: var(--text-secondary);">Okul adını, yönetici şifresini ve sınıfları kodlama yapmadan buradan değiştirebilirsiniz.</p>
                 <div class="form-group">
                     <label>Okul Adı (Kiosk ve Oylama Ekranı İçin)</label>
                     <input type="text" id="settingSchoolName" class="form-input">
@@ -237,14 +236,54 @@
                     <label>Yönetici Şifresi (Admin Girişi İçin)</label>
                     <input type="text" id="settingAdminPassword" class="form-input">
                 </div>
-                <div class="form-group">
-                    <label>Sınıf Listesi (Aralarına virgül koyarak yazın)</label>
-                    <textarea id="settingClasses" class="form-input comment-textarea" placeholder="9-A, 9-B, 10-A, 10-B"></textarea>
+            </div>
+
+            <div class="admin-card">
+                <h2><i class="fas fa-users"></i> Sınıf Yönetimi</h2>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">Okulunuzdaki sınıfları buradan ekleyip çıkarabilirsiniz.</p>
+                <div id="settingClassesContainer" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+                    <!-- Sınıf etiketleri -->
                 </div>
-                <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Ayarları Kaydet</button>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="newClassInput" class="form-input" placeholder="Örn: 9-A" style="flex:1;">
+                    <button class="btn btn-success" onclick="addSettingClass()"><i class="fas fa-plus"></i> Ekle</button>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2><i class="fas fa-list-check"></i> Kriter Yönetimi</h2>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:12px;">Öğretmenlerin oylama yaparken kullanacağı kriterleri (maksimum 5-6 adet önerilir) buradan düzenleyin.</p>
+                <div id="settingCriteriaContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">
+                    <!-- Kriter listesi -->
+                </div>
+                <div style="background:var(--bg); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+                    <h3 style="font-size:0.95rem; margin-bottom:10px;">Yeni Kriter Ekle</h3>
+                    <input type="text" id="newCritTitle" class="form-input" placeholder="Başlık (Örn: Temizlik)" style="margin-bottom:8px;">
+                    <input type="text" id="newCritDesc" class="form-input" placeholder="Açıklama (Örn: Sıraların düzgün olması)" style="margin-bottom:8px;">
+                    <button class="btn btn-success btn-block" onclick="addSettingCriterion()"><i class="fas fa-plus"></i> Kriter Ekle</button>
+                </div>
+            </div>
+
+            <div style="position: sticky; bottom: 20px; z-index: 10;">
+                <button class="btn btn-primary btn-block btn-lg" onclick="saveSettings()" style="box-shadow: 0 10px 20px rgba(0,0,0,0.2);"><i class="fas fa-save"></i> TÜM AYARLARI KAYDET</button>
             </div>
         </div>
+    </div>
 
+    <!-- ========== SINIF DETAY (İSTATİSTİK) MODALI ========== -->
+    <div id="classDetailsModal" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 id="cdModalTitle" style="color:var(--primary); font-size: 1.5rem;"><i class="fas fa-chart-pie"></i> Sınıf Detayları</h2>
+            <p id="cdModalSubtitle" style="color:var(--text-secondary); margin-bottom:20px;">Bu ayki performans analizi yükleniyor...</p>
+            
+            <div id="cdModalContent" style="display:flex; flex-direction:column; gap:12px;">
+                <!-- Kriter barları buraya gelecek -->
+            </div>
+            
+            <div class="modal-actions" style="margin-top: 24px;">
+                <button class="btn btn-outline" onclick="document.getElementById('classDetailsModal').classList.add('hidden')">Kapat</button>
+            </div>
+        </div>
     </div>
 
     <!-- ========== AY SONU SIFIRLAMA MODALI ========== -->
