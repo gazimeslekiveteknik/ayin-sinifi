@@ -5,12 +5,13 @@
 // ============================================
 
 const firebaseConfig = {
-    apiKey: "BGxhHPBDPWK5Jt1NA7gt6mxbFFmSY5JGxevFPmdz_KRxMsI27QSWfGJdIIqEiTcoz2waxuta61ovLV0MnehwAgI",
-    authDomain: "AyinSinifi.firebaseapp.com",
+    apiKey: "AIzaSyDQxJUgn11kBTmaF_tTxKW-hLbQQC5F0RI",
+    authDomain: "ayinsinifi.firebaseapp.com",
     projectId: "ayinsinifi",
-    storageBucket: "proje-adiniz.appspot.com",
+    storageBucket: "ayinsinifi.firebasestorage.app",
     messagingSenderId: "164906254595",
-    appId: "1:123456789:web:abcdef123456"
+    appId: "1:164906254595:web:6c469fb846f5600d73a936",
+    measurementId: "G-HQEJJT9WGV"
 };
 
 // Firebase başlat
