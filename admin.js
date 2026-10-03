@@ -123,6 +123,15 @@ function switchTab(tabName) {
 
     currentTab = tabName;
     
+    // Eğer Karekodlar sekmesine geçiliyorsa otomatik oluştur
+    if (tabName === 'qr') {
+        setTimeout(() => {
+            if (document.getElementById('printArea') && document.getElementById('printArea').innerHTML.trim() === '') {
+                generateAllQRCodes();
+            }
+        }, 100);
+    }
+    
     // Tab butonlarını güncelle
     document.querySelectorAll('.admin-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === tabName);
@@ -878,6 +887,11 @@ function copyToClipboard(text, btn) {
 function generateAllQRCodes() {
     const printArea = document.getElementById('printArea');
     const printBtn = document.getElementById('printQrBtn');
+    
+    if (!APP_CONFIG.classes || APP_CONFIG.classes.length === 0) {
+        showToast("Sınıf listesi boş! Lütfen önce Ayarlar sekmesinden sınıflarınızı ekleyin.", "warning");
+        return;
+    }
     
     // Temizle
     printArea.innerHTML = '';
