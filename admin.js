@@ -1153,3 +1153,38 @@ function switchSettingsSection(sectionId, btn) {
     document.getElementById('set-' + sectionId).classList.add('active');
     if(btn) btn.classList.add('active');
 }
+
+
+// ============================================
+// ÖĞRETMEN DÜZENLEME
+// ============================================
+async function editTeacher(teacherId, oldName, oldBranch, oldPin) {
+    const newName = window.prompt("Öğretmen Adı Soyadı:", oldName);
+    if(newName === null) return;
+    
+    const newBranch = window.prompt("Branşı:", oldBranch);
+    if(newBranch === null) return;
+    
+    const newPin = window.prompt("Giriş Şifresi (PIN):", oldPin);
+    if(newPin === null) return;
+    
+    if(newName.trim() === '' || newPin.trim() === '') {
+        showToast("İsim ve PIN boş olamaz!", "warning");
+        return;
+    }
+    
+    showLoading(true, "Güncelleniyor...");
+    try {
+        await db.collection('teachers').doc(teacherId).update({
+            name: newName.trim(),
+            branch: newBranch.trim(),
+            pin: newPin.trim()
+        });
+        showToast("Öğretmen başarıyla güncellendi.", "success");
+        await loadTeachers();
+    } catch(e) {
+        console.error(e);
+        showToast("Güncelleme başarısız oldu.", "error");
+    }
+    showLoading(false);
+}
