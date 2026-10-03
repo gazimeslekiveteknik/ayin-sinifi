@@ -1179,8 +1179,8 @@ function switchReportSection(sectionId, btn) {
 }
 
 function switchSettingsSection(sectionId, btn) {
-    document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-settings').querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('tab-settings').querySelectorAll('.settings-nav-btn').forEach(b => b.classList.remove('active'));
     
     document.getElementById('set-' + sectionId).classList.add('active');
     if(btn) btn.classList.add('active');
