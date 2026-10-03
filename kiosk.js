@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sName = document.getElementById('kioskSchoolName');
     if(sName) sName.textContent = APP_CONFIG.schoolName;
 
-    // Saat başlat
-    startClock();
 
     // Verileri Dinlemeye Başla (Gerçek Zamanlı)
     initRealtimeListeners();
@@ -235,12 +233,4 @@ function renderPastWeeks(weeks, currentWeekNum) {
     container.style.display = hasPastWeeks ? 'flex' : 'none';
 }
 
-function startClock() {
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('timeDisplay').textContent = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-        document.getElementById('dateDisplay').textContent = now.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-    updateClock();
-    setInterval(updateClock, 10000);
-}
+
