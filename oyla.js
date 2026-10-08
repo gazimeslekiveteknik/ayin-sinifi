@@ -277,7 +277,7 @@ async function checkDuplicateVote() {
         .where('dateKey', '==', todayKey)
         .get();
     
-    return !snapshot.empty;
+    return snapshot.size >= (APP_CONFIG.dailyVoteLimit || 1);
 }
 
 /**

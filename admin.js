@@ -1036,6 +1036,16 @@ function populateSettingsUI() {
     document.getElementById('settingSchoolName').value = APP_CONFIG.schoolName;
     document.getElementById('settingAdminPassword').value = APP_CONFIG.adminPassword;
     
+    if(document.getElementById('settingDailyVoteLimit')) {
+        document.getElementById('settingDailyVoteLimit').value = APP_CONFIG.dailyVoteLimit || 1;
+    }
+    
+    const migrateSelect = document.getElementById('migrateOldClass');
+    if (migrateSelect) {
+        migrateSelect.innerHTML = '<option value="">-- Sınıf Seçin --</option>' + 
+            APP_CONFIG.classes.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+    
     editingClasses = [...APP_CONFIG.classes];
     editingCriteria = JSON.parse(JSON.stringify(APP_CONFIG.criteria));
     
@@ -1128,6 +1138,10 @@ function removeSettingCriterion(index) {
 async function saveSettings() {
     const newSchoolName = document.getElementById('settingSchoolName').value.trim();
     const newPassword = document.getElementById('settingAdminPassword').value.trim();
+    let newDailyLimit = 1;
+    if(document.getElementById('settingDailyVoteLimit')) {
+        newDailyLimit = parseInt(document.getElementById('settingDailyVoteLimit').value) || 1;
+    }
     
     if(!newSchoolName || !newPassword || editingClasses.length === 0 || editingCriteria.length === 0) {
         showToast("Okul adı, şifre, sınıflar veya kriterler boş olamaz!", "error");
@@ -1139,12 +1153,14 @@ async function saveSettings() {
         await db.collection('settings').doc('general').set({
             schoolName: newSchoolName,
             adminPassword: newPassword,
+            dailyVoteLimit: newDailyLimit,
             classes: editingClasses,
             criteria: editingCriteria
         }, {merge: true});
         
         APP_CONFIG.schoolName = newSchoolName;
         APP_CONFIG.adminPassword = newPassword;
+        APP_CONFIG.dailyVoteLimit = newDailyLimit;
         APP_CONFIG.classes = [...editingClasses];
         APP_CONFIG.criteria = JSON.parse(JSON.stringify(editingCriteria));
         
@@ -1621,3 +1637,97 @@ window.deleteVote = async function(voteId) {
     }
     showLoading(false);
 };
+
+async function migrateClassData() {
+    const oldClass = document.getElementById('migrateOldClass').value;
+    const newClass = document.getElementById('migrateNewClass').value.trim();
+    
+    if(!oldClass || !newClass) {
+        showToast("Lütfen eski ve yeni sınıf isimlerini eksiksiz girin.", "error");
+        return;
+    }
+    if(oldClass === newClass) {
+        showToast("Eski ve yeni isim aynı olamaz.", "error");
+        return;
+    }
+    if(!confirm(`${oldClass} sınıfının tüm verileri ${newClass} olarak değiştirilecek. Onaylıyor musunuz?`)) return;
+
+    showLoading(true, "Veriler taşınıyor, lütfen bekleyin...");
+    try {
+        let batches = [db.batch()];
+        let batchIndex = 0;
+        let operationCount = 0;
+        
+        const addToBatch = (cb) => {
+            if(operationCount >= 450) {
+                batches.push(db.batch());
+                batchIndex++;
+                operationCount = 0;
+            }
+            cb(batches[batchIndex]);
+            operationCount++;
+        };
+
+        // 1. Oyları Taşı
+        const votesSnap = await db.collection('votes').where('classId', '==', oldClass).get();
+        votesSnap.forEach(doc => {
+            addToBatch((batch) => batch.update(doc.ref, { classId: newClass }));
+        });
+
+        // 2. Yıllık Şampiyonları Taşı
+        const champOldRef = db.collection('yearlyChampions').doc(oldClass);
+        const champSnap = await champOldRef.get();
+        if(champSnap.exists) {
+            const data = champSnap.data();
+            data.classId = newClass;
+            const champNewRef = db.collection('yearlyChampions').doc(newClass);
+            addToBatch((batch) => batch.set(champNewRef, data));
+            addToBatch((batch) => batch.delete(champOldRef));
+        }
+
+        // 2.5 Aylık Özetleri Taşı (monthlySummaries)
+        const summarySnap = await db.collection('monthlySummaries').where('classId', '==', oldClass).get();
+        summarySnap.forEach(doc => {
+            const data = doc.data();
+            data.classId = newClass;
+            const newDocId = doc.id.replace(oldClass, newClass);
+            const newSummaryRef = db.collection('monthlySummaries').doc(newDocId);
+            addToBatch((batch) => batch.set(newSummaryRef, data));
+            addToBatch((batch) => batch.delete(doc.ref));
+        });
+
+        // 3. Arşivi Taşı
+        const archiveSnap = await db.collection('archive').get();
+        archiveSnap.forEach(doc => {
+            const data = doc.data();
+            if(data.winner && data.winner.classId === oldClass) {
+                data.winner.classId = newClass;
+                addToBatch((batch) => batch.update(doc.ref, { winner: data.winner }));
+            }
+        });
+
+        // 4. Genel Ayarlardaki Sınıf Listesini Güncelle
+        const settingsRef = db.collection('settings').doc('general');
+        const settingsSnap = await settingsRef.get();
+        if(settingsSnap.exists) {
+            let classes = settingsSnap.data().classes || [];
+            const idx = classes.indexOf(oldClass);
+            if(idx !== -1) {
+                classes[idx] = newClass;
+                addToBatch((batch) => batch.update(settingsRef, { classes: classes }));
+            }
+        }
+        
+        for (let b of batches) {
+            await b.commit();
+        }
+        
+        showLoading(false);
+        showToast("Veriler başarıyla taşındı!", "success");
+        setTimeout(() => location.reload(), 2000);
+    } catch(err) {
+        console.error(err);
+        showLoading(false);
+        showToast("Bir hata oluştu: " + err.message, "error");
+    }
+}

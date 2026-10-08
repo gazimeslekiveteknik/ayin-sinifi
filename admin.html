@@ -263,7 +263,32 @@
                                 <input type="text" id="newClassInput" class="form-input" placeholder="Yeni sınıf adı girin (Örn: 9-A Bilişim)" style="flex:1;">
                                 <button class="btn btn-primary" onclick="addSettingClass()"><i class="fas fa-plus"></i> Ekle</button>
                             </div>
+                        
+                        <div class="admin-card" style="margin-top:20px;">
+                            <h2><i class="fas fa-vote-yea"></i> Günlük Oy Limiti (Öğretmen Başına)</h2>
+                            <p style="color:var(--text-secondary); margin-bottom:12px;">Bir öğretmenin <b>aynı gün içinde aynı sınıfa</b> verebileceği maksimum oy hakkı. (Özellikle bir öğretmenin aynı sınıfa aynı gün içinde birden fazla farklı derse girdiği durumlar için bu limiti artırabilirsiniz).</p>
+                            <div style="max-width: 200px;">
+                                <input type="number" id="settingDailyVoteLimit" class="form-input" min="1" max="10" value="1">
+                            </div>
                         </div>
+
+                        <div class="admin-card" style="margin-top:20px; border-left: 4px solid var(--accent);">
+                            <h2><i class="fas fa-exchange-alt"></i> Sınıf İsmi Güncelleme / Veri Taşıma</h2>
+                            <p style="color:var(--text-secondary); margin-bottom:12px;">Sınıf ismini değiştirdiğinizde, eski isme ait kullanılan oyların, aylık özetlerin ve şampiyonluk yıldızlarının <b>yeni isme kayıpsız aktarılması</b> için bu aracı kullanın.</p>
+                            <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+                                <div style="flex:1; min-width:200px;">
+                                    <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:6px;">Mevcut / Eski Sınıf</label>
+                                    <select id="migrateOldClass" class="form-input"></select>
+                                </div>
+                                <div style="flex:1; min-width:200px;">
+                                    <label style="font-size:0.85rem; font-weight:600; display:block; margin-bottom:6px;">Yeni Sınıf İsmi</label>
+                                    <input type="text" id="migrateNewClass" class="form-input" placeholder="Örn: 9-A Bilişim Teknolojileri">
+                                </div>
+                                <div>
+                                    <button class="btn btn-success" onclick="migrateClassData()"><i class="fas fa-exchange-alt"></i> Aktar ve Kaydet</button>
+                                </div>
+                            </div>
+                        </div></div>
                     </div>
                     
                     <!-- 3. Kriter Yönetimi -->

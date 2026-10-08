@@ -86,6 +86,7 @@ const APP_CONFIG = {
 
     // Admin paneli şifresi
     adminPassword: "admin2024",
+    dailyVoteLimit: 1,
 
     // Büyük ödül için gereken şampiyonluk sayısı
     grandPrizeThreshold: 5,
@@ -190,6 +191,7 @@ async function loadRemoteSettings() {
             if(data.schoolName) APP_CONFIG.schoolName = data.schoolName;
             if(data.classes) APP_CONFIG.classes = data.classes;
             if(data.adminPassword) APP_CONFIG.adminPassword = data.adminPassword;
+            if(data.dailyVoteLimit !== undefined) APP_CONFIG.dailyVoteLimit = data.dailyVoteLimit;
             if(data.criteria) APP_CONFIG.criteria = data.criteria;
         } else {
             // İlk kurulumsa varsayılanları veritabanına yaz
