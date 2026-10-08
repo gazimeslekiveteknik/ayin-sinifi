@@ -18,6 +18,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// MEB Fatih Ağı (Güvenlik Duvarı) WebSocket engelini aşmak için Long-Polling kullanıma zorlanıyor
+db.settings({ experimentalForceLongPolling: true });
+
 // ============================================
 // UYGULAMA SABİTLERİ
 // ============================================
