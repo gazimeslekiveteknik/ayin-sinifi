@@ -120,4 +120,295 @@
         .widget {
             margin-bottom: 40px;
             flex: 1;
-            display: flex
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .widget h3 {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .widget-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .widget-list::-webkit-scrollbar { width: 4px; }
+        .widget-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .star-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+        .star-card:hover { transform: translateX(5px); background: rgba(255,255,255,0.08); }
+        .sc-class { font-size: 1.1rem; font-weight: 700; }
+        .sc-stars { color: var(--gold); letter-spacing: 2px; font-size: 0.9rem; text-shadow: 0 0 8px var(--gold-glow); }
+
+        .archive-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border-left: 3px solid var(--accent);
+        }
+        .ac-month { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+        .ac-class { font-size: 1.1rem; font-weight: 700; }
+
+        /* ANA EKRAN */
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+        .header-area h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #EF4444;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .pulse {
+            width: 8px; height: 8px;
+            background: #EF4444;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #EF4444;
+            animation: pulse-animation 1.5s infinite;
+        }
+        @keyframes pulse-animation {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* LİDERLİK TABLOSU (İLK 10) */
+        .leaderboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            flex: 1;
+            align-content: flex-start;
+        }
+
+        .lb-row {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px 24px;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+
+        /* Rank 1 Özel Tasarım */
+        .lb-row.rank-1 {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, rgba(31, 41, 55, 0.4) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-left: 6px solid var(--gold);
+            padding: 20px 24px;
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(251, 191, 36, 0.05);
+            margin-bottom: 10px;
+        }
+        .lb-row.rank-2 { border-left: 4px solid var(--silver); }
+        .lb-row.rank-3 { border-left: 4px solid var(--bronze); }
+        
+        .lb-rank {
+            width: 40px;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--text-muted);
+            text-align: center;
+            margin-right: 20px;
+        }
+        .rank-1 .lb-rank { color: var(--gold); font-size: 2.2rem; text-shadow: 0 0 15px var(--gold-glow); }
+        .rank-2 .lb-rank { color: var(--silver); }
+        .rank-3 .lb-rank { color: var(--bronze); }
+
+        .lb-class {
+            flex: 1;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .rank-1 .lb-class { font-size: 1.8rem; color: var(--gold); }
+
+        .lb-stats {
+            display: flex;
+            gap: 16px;
+        }
+        .stat-box {
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 8px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .rank-1 .stat-box { background: rgba(0,0,0,0.5); border-color: rgba(251, 191, 36, 0.2); }
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .stat-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+        }
+        .stat-box.highlight .stat-val { color: var(--accent); }
+        .rank-1 .stat-box.highlight .stat-val { color: var(--gold); text-shadow: 0 0 10px var(--gold-glow); }
+
+        /* ÖNCEKİ HAFTALAR ALT PANEL */
+        .past-weeks {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 20px;
+            height: 140px;
+        }
+        .pw-card {
+            flex: 1;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .pw-card::before {
+            content: ''; position: absolute; top:0; left:0; width:4px; height:100%; background: var(--text-muted); opacity: 0.3;
+        }
+        .pw-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .pw-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .pw-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+        }
+        .pw-item-class { font-weight: 600; }
+        .pw-item-score { color: var(--accent); font-weight: 700; }
+        .pw-item:first-child .pw-item-class { color: var(--gold); }
+        .pw-item:first-child .pw-item-score { color: var(--gold); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Yükleniyor -->
+    <div id="overlay" class="overlay">
+        <div class="spinner"></div>
+        <p style="margin-top:20px; font-weight:300; font-size:1.2rem; letter-spacing:2px; color:#94A3B8;">SİSTEME BAĞLANILIYOR</p>
+    </div>
+
+    <!-- SOL PANEL -->
+    <aside class="sidebar">
+        <div class="brand-area">
+            <div class="app-title">AYIN SINIFI</div>
+            <div class="month-badge" id="kioskMonth">Ay Yıl</div>
+        </div>
+
+        <div class="widget">
+            <h3><i class="fas fa-star" style="color:var(--gold);"></i> Şampiyonlar (Yıldızlar)</h3>
+            <div class="widget-list" id="starsList">
+                <!-- JS -->
+                <div style="opacity:0.4; font-size:0.9rem; text-align:center; padding:10px;">Veri Bekleniyor...</div>
+            </div>
+        </div>
+
+        <div class="widget">
+            <h3><i class="fas fa-history"></i> Geçmiş Aylar</h3>
+            <div class="widget-list" id="archiveList">
+                <!-- JS -->
+                <div style="opacity:0.4; font-size:0.9rem; text-align:center; padding:10px;">Arşiv Boş</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- SAĞ PANEL -->
+    <main class="main-content">
+        <div class="header-area">
+            <div>
+                <h2 id="weekTitle">Haftalık Sıralama</h2>
+                <p style="color:var(--text-muted); font-size:1.1rem; margin-top:4px;">Güncel anlık veriler puan tablosuna yansımaktadır.</p>
+            </div>
+            <div class="live-badge">
+                <div class="pulse"></div> CANLI
+            </div>
+        </div>
+
+        <!-- LİDERLİK TABLOSU -->
+        <div class="leaderboard" id="leaderboardGrid">
+            <!-- JS -->
+        </div>
+
+        <!-- ÖNCEKİ HAFTALAR -->
+        <div class="past-weeks" id="pastWeeksContainer" style="display: none;">
+            <!-- JS -->
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    
+    <!-- Real-time Logic -->
+    <script src="kiosk.js"></script>
+</body>
+</html>
