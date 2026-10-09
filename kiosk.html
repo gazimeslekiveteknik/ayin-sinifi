@@ -44,8 +44,16 @@
             color: var(--text-main);
             overflow: hidden;
             cursor: none;
-            height: 100vh;
-            width: 100vw;
+            
+            /* GÜNCELLENEN KISIM: Kiosk ve iframe ekranlarında taşmayı önler */
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             display: flex;
         }
 
@@ -162,7 +170,6 @@
         .ac-month { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
         .ac-class { font-size: 1.1rem; font-weight: 700; }
 
-        
         
 
         /* ANA EKRAN */
@@ -385,30 +392,4 @@
         <div class="header-area">
             <div>
                 <h2 id="weekTitle">Haftalık Sıralama</h2>
-                <p style="color:var(--text-muted); font-size:1.1rem; margin-top:4px;">Güncel anlık veriler puan tablosuna yansımaktadır.</p>
-            </div>
-            <div class="live-badge">
-                <div class="pulse"></div> CANLI
-            </div>
-        </div>
-
-        <!-- LİDERLİK TABLOSU -->
-        <div class="leaderboard" id="leaderboardGrid">
-            <!-- JS -->
-        </div>
-
-        <!-- ÖNCEKİ HAFTALAR -->
-        <div class="past-weeks" id="pastWeeksContainer" style="display: none;">
-            <!-- JS -->
-        </div>
-    </main>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    
-    <!-- Real-time Logic -->
-    <script src="kiosk.js"></script>
-</body>
-</html>
+                <p style="color:var(--text-muted); font-size:1.1rem; margin-top:4
